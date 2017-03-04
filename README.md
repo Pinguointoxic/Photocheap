@@ -65,11 +65,48 @@ void setPixel(BMP* bmp, int i, int j, Pixel p)
 - [ ] Echanger les 3 cannaux de couleur cycliquement
 - [ ] \( optionnel ) Redimenssionnement proche voisin
 
+#### Nuance de gris
+```C
+BMP* greyScale(BMP* bmp)
+```
+   Transforme l'image de départ _bmp_ en son équivalent en nuance de gris suivant la formule proposée par la CIE :  
+   `Gris = 0.2125 Rouge + 0.7154 Vert + 0.0721 Bleu`
+   
+#### Negatif
+```C
+BMP* invert(BMP* bmp)
+```
+   Transforme l'image de départ _bmp_ en son équivalent en negatif :  
+   `Negatif = 255 - Couleur`
+   
+#### Saturation
+
+#### Contrastes
+
+#### Echanger 2 cannaux de couleurs
+
+#### Echanger 3 cannaux de couleurs
+
+
 ### Analyse
-- [x] Contour \(Sobel)
-- [x] Contour \(Pewitt)
+- [x] Contour \(Sobel + Pewitt)
 - [x] Histogramme \(Rouge, Vert, Bleu, Gris)
 - [ ] Statistiques \(Portait ? Paysage ? ...)
+
+#### Contour (Sobel + Pewitt)
+```C
+BMP* sobel(BMP* bmp)
+BMP* pewitt(BMP* bmp)
+```
+   Renvoi une image représentant les contours d'une images obtenues via les opérateurs de Sobel ou de Pewitt
+
+#### Histogramme
+```C
+void histogram(BMP* bmp)
+```
+   Créer 4 images BMP et un fichier texte représentant les histogrammes d'une image. Un histogramme par canal de couleur (Rouge, Vert et Bleu) et un histogramme de la luminosité de l'image (Gris). Plus la densité de pixels est forte vers la valeur 255, plus l'image est sombre; réciproquement, si la densité est forte vers la valeur 0, l'image est claire.
+   
+#### Statistiques
 
 ## License
 

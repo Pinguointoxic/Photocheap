@@ -167,7 +167,7 @@ BMP* greyScale(BMP* bmp)
 		for(j=0; j<bmp->height; j++)
 		{
 			p 		= getPixel(bmp, i, j);
-			grey 	= p.Red*0.2125 + p.Green*0.587 + p.Blue*0.114;
+			grey 	= p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
 			p.Blue 	= p.Red = p.Green = grey;
 			setPixel(bmp, i, j, p);
 		}
@@ -272,11 +272,13 @@ void histogram(BMP* bmp)
 {
 	int 	i, j, k;
 	int		MAXR=0, MAXG=0, MAXB=0, MAX=0;
-	int		histo[3][256] = {{0}}; // ligne 0->red -- ligne 1->green -- ligne 3->blue
-	Pixel 	p, greyp;
+	int		histo[4][256] = {{0}}; // ligne 0->red -- ligne 1->green -- ligne 3->blue --- ligne 4->gris
+	Pixel 	p;
+	int		greyp;
 	BMP* 	histoR;
 	BMP*	histoG;
 	BMP*	histoB;
+	BMP*	histoGrey;
 	BMP*	test;
 
 	// Remplissage de l'histogramme et recherche du plus grand nombre de pixel de la meme couleur
@@ -285,28 +287,31 @@ void histogram(BMP* bmp)
 		for(j=0; j<bmp->height; j++)
 		{
 			p = getPixel(bmp, i, j);
-
+			greyp = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
 			histo[0][p.Red]++;
 			histo[1][p.Green]++;
 			histo[2][p.Blue]++;
+			histo[3][greyp]++;
 
 			if( histo[0][p.Red]		> MAXR ) 	MAXR = histo[0][p.Red];
 			if( histo[1][p.Green] 	> MAXG ) 	MAXG = histo[1][p.Green];
 			if( histo[2][p.Blue] 	> MAXB ) 	MAXB = histo[2][p.Blue];
+			if( histo[3][greyp] 	> MAX  ) 	MAX  = histo[3][greyp];
 		}
 	}
 
 	// Création de l'image histogramme
-	histoR = newBMP(256,200);
-	histoG = newBMP(256,200);
-	histoB = newBMP(256,200);
+	histoR 		= newBMP(256,200);
+	histoG 		= newBMP(256,200);
+	histoB 		= newBMP(256,200);
+	histoGrey 	= newBMP(256,200);
 
-	FILE* f1 = fopen("histogram.txt", "w");
-
+	FILE* f1 = fopen("histograms/histogram.txt", "w");
+	fprintf(f1, "VALUE	RED	GREEN	BLUE GREY\n");
 	for(i=0; i<256; i++)
 	{
-		fprintf(f1, "%d	%d	%d	%d\n",i, (histo[0][i]*200/MAXR), (histo[1][i]*200/MAXG), (histo[2][i]*200/MAXB) ) ;
-		for(j=199; j>=0; j--) // rouge
+		fprintf(f1, "%d	%d	%d	%d	%d\n",i, (histo[0][i]*200/MAXR), (histo[1][i]*200/MAXG), (histo[2][i]*200/MAXB), (histo[3][i]*200/MAX) ) ;
+		for(j=199; j>=0; j--)
 		{
 			if ( histo[0][i]*200/MAXR > j)
 				setPixel(histoR, i, 199-j, RED);
@@ -322,13 +327,19 @@ void histogram(BMP* bmp)
 				setPixel(histoB, i, 199-j, BLUE);
 			else
 				setPixel(histoB, i, 199-j, WHITE);
+
+			if ( histo[3][i]*200/MAX > j)
+				setPixel(histoGrey, i, 199-j, GREY);
+			else
+				setPixel(histoGrey, i, 199-j, WHITE);
 		}
 	}
 
 	fclose(f1);
-	saveBMP(histoR, "histogram_Red.bmp");
-	saveBMP(histoG, "histogram_Green.bmp");
-	saveBMP(histoB, "histogram_Blue.bmp");
+	saveBMP(histoR, "histograms/histogram_Red.bmp");
+	saveBMP(histoG, "histograms/histogram_Green.bmp");
+	saveBMP(histoB, "histograms/histogram_Blue.bmp");
+	saveBMP(histoGrey, "histograms/histogram_Grey.bmp");
 
 }
 

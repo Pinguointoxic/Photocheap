@@ -56,6 +56,7 @@ Pixel GREEN =  {0,255,0};
 Pixel BLUE  =  {255,0,0};
 Pixel BLACK =  {0,0,0};
 Pixel WHITE =  {255,255,255};
+Pixel GREY  =  {126,126,126};
 
 void 	setPixel	(BMP*, int, int, Pixel);   // Place un pixel a des coordonnées données
 Pixel getPixel	(BMP*, int, int);          // Recupere le pixel a des coordonnées données

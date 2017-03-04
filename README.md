@@ -1,4 +1,4 @@
-![Simple Form Logo](https://raw.githubusercontent.com/Rodd8/Photocheap/master/src/logo.png)
+<img src="https://raw.githubusercontent.com/Rodd8/Photocheap/master/src/logo.png" width="250">
 
 # EOST Photocheap CC
 Par __Emeline Ehles__ et __Robin Dell__.

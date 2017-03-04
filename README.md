@@ -15,10 +15,31 @@ Photocheap est une logiciel en C ayant pour but d'effectuer des traitements et d
 A FAIRE
 
 ## Fonctions
-### Modification
+### Manipulation
+- [x] Créer une image BMP
+- [x] Charger une image BMP
+- [x] Sauvegarder une image BMP
+- [x] Récupérer les valeurs d'un pixel
+- [x] Définir un pixel avec certaines valeurs
 
+Créer une image BMP :
+
+
+
+### Modification
+- [x] Nuance de gris
+- [x] Negatif
+- [ ] Saturation
+- [ ] Contrastes
+- [ ] Echanger les cannaux de couleur 2 a 2
+- [ ] Echanger les 3 cannaux de couleur cycliquement
+- [ ] \( optionnel ) Redimenssionnement proche voisin
 
 ### Analyse
+- [x] Contour \(Sobel)
+- [x] Contour \(Pewitt)
+- [x] Histogramme (\Rouge, Vert, Bleu, Gris)
+- [ ] Statistiques \(Portait ? Paysage ? ...)
 
 ## License
 

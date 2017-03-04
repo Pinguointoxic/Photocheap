@@ -22,34 +22,34 @@ A FAIRE
 - [x] Récupérer les valeurs d'un pixel
 - [x] Définir un pixel avec certaines valeurs
 
-+ Créer une image BMP :
+#### Créer une image BMP :
 ```C
 BMP* newBMP(int largeur, int hauteur)
 ```
    Renvoit une structure BMP de la taille passée en paramètre.
    La structure contient une largeur (int), une hauteur (int) et un tableau de pixels (Pixel*)
 
-+ Charger une image BMP
+#### Charger une image BMP
 ```C
 BMP* loadBMP(const char* nomDeLimage)
 ```
    Charger une image bitmap de l'ordinateur dans le logiciel.
    Renvoit une structure BMP de la taille de l'image avec le tableau de pixels contenant les pixels de l'image passée en paramètre
   
-+ Sauvegarder une image BMP
+#### Sauvegarder une image BMP
 ```C
 int saveBMP(BMP* image, const char* nomDeLimage)
 ```
    Enregistre une structure BMP en un fichier bitmap.
    Remplit le _header_ et l'_infoheader_ avec toutes les valeurs necessaires (taille, nombre magique, palette, poids et octets ...)
    
-+ Récupérer les valeurs d'un pixel
+#### Récupérer les valeurs d'un pixel
 ```C
 Pixel getPixel(BMP* bmp, int i, int j)
 ```
    Revoit une structure Pixel contenant les valeurs RGB (3 unsigned char -> 255) d'une structure BMP (_BMP* bmp_) aux coordonnées _int i_ et _int j_ passées en paramètres
    
-+ Définir un pixel avec certaines valeurs
+#### Définir un pixel avec certaines valeurs
 ```C
 void setPixel(BMP* bmp, int i, int j, Pixel p)
 ```

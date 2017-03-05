@@ -21,6 +21,8 @@ A FAIRE
 - [x] Sauvegarder une image BMP
 - [x] Récupérer les valeurs d'un pixel
 - [x] Définir un pixel avec certaines valeurs
+- [ ] RGB2HSL
+- [ ] HSL2RGB
 
 #### Créer une image BMP :
 ```C
@@ -47,7 +49,7 @@ int saveBMP(BMP* image, const char* nomDeLimage)
 ```C
 Pixel getPixel(BMP* bmp, int i, int j)
 ```
-   Revoit une structure Pixel contenant les valeurs RGB (3 unsigned char -> 255) d'une structure BMP (_BMP* bmp_) aux coordonnées _int i_ et _int j_ passées en paramètres
+   Revoit une structure Pixel contenant les valeurs RGB (3 unsigned char 0 -> 255) d'une structure BMP (_BMP* bmp_) aux coordonnées _int i_ et _int j_ passées en paramètres
    
 #### Définir un pixel avec certaines valeurs
 ```C
@@ -55,6 +57,14 @@ void setPixel(BMP* bmp, int i, int j, Pixel p)
 ```
    Pose un pixel _p_ aux coordonnées _i_ et _j_ sur la structure _bmp_
    Le pixel _p_ est composé des composantes R, G et B.
+   
+#### RGB2HSL
+
+   Transforme les informations RGB d'un pixel en HSL (Hue, Saturation, Lightness)
+   
+#### HSL2RGB
+
+   Transforme les informations HSL d'un pixel en RGB pour les enregristrer dans l'image
    
 ### Modification
 - [x] Nuance de gris
@@ -80,6 +90,7 @@ BMP* invert(BMP* bmp)
    `Negatif = 255 - Couleur`
    
 #### Saturation
+Il va etre nécessaire de transformer les valeur RGB en HLS (Hue, Lightness, Saturation) pour effectuer les modifications de saturation sur l'image.
 
 #### Contrastes
 

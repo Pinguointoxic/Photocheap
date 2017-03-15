@@ -1,4 +1,6 @@
 #define TEST printf(" ! TEST ! ")
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
 
 /***************************
 		 STRUCTURES
@@ -7,6 +9,7 @@
 typedef struct BMPInfoHeader 	InfoHeader;
 typedef struct BMPHeader		Header;
 typedef struct Pixel			   Pixel;
+typedef struct HSL            HSL;
 typedef struct BMP				BMP;
 
 struct BMPInfoHeader
@@ -44,6 +47,14 @@ struct BMP
 {
 	int width, height;			// Largeur + Hauteur de l'image
 	Pixel* data;				   // Tableau contenant les pixels
+};
+
+struct HSL
+{
+   float HuePrct;
+   float HueDeg;
+   float Sat;
+   float Light;
 };
 
 

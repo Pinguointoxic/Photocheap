@@ -36,6 +36,53 @@ Pixel getPixel(BMP* bmp, int i, int j)
 	return bmp->data[bmp->width*j+i];
 }
 
+	/***************
+	 	RGB2HSL
+	***************/
+HSL RGB2HSL(Pixel p)
+{
+	HSL hsl;
+	float R=((float)p.Red / 255), G=((float)p.Green / 255), B=((float)p.Blue / 255);
+	float max=max(R, max(G, B));
+	float min=min(R, min(G, B));
+	float delta = max-min;
+
+	hsl.Light = (max+min)/2;
+
+	if(delta == 0.0)
+		hsl.HuePrct = hsl.Sat = 0;
+	else
+	{
+		//hsl.Sat = hsl.Light > 0.5 ? delta / (2 - delta) : delta / (max + min);
+		hsl.Sat = delta / (1-fabs(2*hsl.Light-1));
+
+		if(max == R)
+			hsl.HuePrct = (G - B) / delta + (G < B ? 6 : 0);
+		else if(max == G)
+			hsl.HuePrct = (B - R) / delta + 2;
+		else if(max == B)
+			hsl.HuePrct = (R - G) / delta + 4;
+
+		hsl.HuePrct /=6;
+	}
+	hsl.HueDeg = hsl.HuePrct * 360;
+	printf("Hue: %f - %f, Sat:%f, Light:%f\n", hsl.HuePrct, hsl.HueDeg, hsl.Sat, hsl.Light);
+	return hsl;
+}
+
+	/***************
+	 	HSL2RGB
+	***************/
+Pixel HSL2RGB(HSL hsl)
+{
+	Pixel p;
+
+	float c = (1 - fabs(2*hsl.Light-1)) * hsl.Sat;
+	float x = c * fabs(1-hsl.Hue/(100/6) % 2 - 1);
+	float m = hsl.Light - c/2;
+	return p;
+}
+
 
 
 /***************************
@@ -345,7 +392,8 @@ void histogram(BMP* bmp)
 
 int main()
 {
-	BMP* 	J = loadBMP("parrot.bmp");
-	histogram(J);
+	Pixel p;
+	p.Red = 255; p.Green = 0; p.Blue = 255;
+	RGB2HSL(p);
 	return 0;
 }

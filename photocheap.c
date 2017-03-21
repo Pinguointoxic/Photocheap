@@ -42,35 +42,82 @@ Pixel getPixel(BMP* bmp, int i, int j)
 HSL RGB2HSL(Pixel p)
 {
 	HSL hsl;
-	float R=((float)p.Red / 255), G=((float)p.Green / 255), B=((float)p.Blue / 255);
+	float R=((float)p.Red / 255.0), G=((float)p.Green / 255.0), B=((float)p.Blue / 255.0);
+	float r, g, b;
 	float max=max(R, max(G, B));
 	float min=min(R, min(G, B));
 	float delta = max-min;
 
-	hsl.Light = (max+min)/2;
+	hsl.Light = (max+min)/2.0;
 
 	if(delta == 0.0)
-		hsl.HuePrct = hsl.Sat = 0;
+		hsl.Hue = hsl.Sat = 0.0;
 	else
 	{
-		//hsl.Sat = hsl.Light > 0.5 ? delta / (2 - delta) : delta / (max + min);
-		hsl.Sat = delta / (1-fabs(2*hsl.Light-1));
-
-		if(max == R)
-			hsl.HuePrct = (G - B) / delta + (G < B ? 6 : 0);
-		else if(max == G)
-			hsl.HuePrct = (B - R) / delta + 2;
-		else if(max == B)
-			hsl.HuePrct = (R - G) / delta + 4;
-
-		hsl.HuePrct /=6;
+		if(hsl.Light < 0.5)
+			hsl.Sat = delta / (max+min);
+		else
+			hsl.Sat = delta / (2-delta);
+			
+		r = ((max - R) / 6.0 ) + (delta / 2.0) / delta;
+		g = ((max - G) / 6.0 ) + (delta / 2.0) / delta;
+		b = ((max - B) / 6.0 ) + (delta / 2.0) / delta;
+		
+		if(R == max)
+			hsl.Hue = b-g;
+		else if(G == max)
+			hsl.Hue = (1.0/3.0) + r-b;
+		else if(B == max)
+			hsl.Hue = (2.0/3.0) + g-r;
+		
+		if(hsl.Hue < 0.0) hsl.Hue +=1;
+		if(hsl.Hue > 1.0) hsl.Hue -=1;
 	}
-	hsl.HueDeg = hsl.HuePrct * 360;
-	printf("Hue: %f - %f, Sat:%f, Light:%f\n", hsl.HuePrct, hsl.HueDeg, hsl.Sat, hsl.Light);
+	//printf("Hue: %f, Sat:%f, Light:%f\n", hsl.Hue,  hsl.Sat, hsl.Light);
 	return hsl;
 }
 
 
+
+	/***************
+	 	HSL2RGB
+	***************/
+Pixel HSL2RGB(HSL hsl)
+{
+	Pixel p;
+	float a, b;
+	if(hsl.Sat == 0.0)
+	{
+		p.Red = hsl.Light * 255;
+		p.Green = hsl.Light * 255;
+		p.Blue = hsl.Light * 255;
+	}
+	else
+	{
+		if(hsl.Light < 0.5)
+			b = hsl.Light * (1 + hsl.Sat);
+		else
+			b = (hsl.Light+hsl.Sat) - (hsl.Light*hsl.Sat);
+			
+		a = 2 * hsl.Light - b;
+		
+		p.Red = 255 * Hue2RGB(a, b, hsl.Hue+(1/3.0));
+		p.Green  = 255 * Hue2RGB(a, b, hsl.Hue);
+		p.Blue = 255 * Hue2RGB(a, b, hsl.Hue-(1/3.0)); 
+	}
+	//printf("Red: %d, Green:%d, Blue:%d\n", p.Red, p.Green, p.Blue);
+	return p;
+}
+
+float Hue2RGB(float a, float b, float h)
+{
+	if(h < 0.0) h +=1;
+	if(h > 1.0) h -=1;
+	if(( 6 * h ) < 1.0 ) return a + (b - a) * 6 * h;
+	if(( 2 * h ) < 1.0 ) return b;
+	if(( 3 * h ) < 2.0 ) return a + (b - a) * ((2/3.0) - h) * 6;
+	return a;
+}
 
 
 /***************************
@@ -237,27 +284,58 @@ BMP* invert(BMP* bmp)
  	/*********
  	 CONTRAST
  	*********/
- BMP* contrast(BMP* bmp, int cont)
- {
- 	int i, j;
- 	Pixel p, cp;
- 	float f;
- 	f  = (259*(cont + 255)) / (255*(259 - cont));
- 	
- 	for(i=0; i<bmp->width; i++)
- 	{
- 		for(j=0; j<bmp->height; j++)
- 		{
- 			p 			= getPixel(bmp, i, j);
- 			cp.Red 		= trunc( f * (p.Red - 128) + 128 );
-  			cp.Green 	= trunc( f * (p.Green - 128) + 128 );
-   			cp.Blue 	= trunc( f * (p.Blue - 128) + 128 );
-   			setPixel(bmp, i, j, cp);
- 		}
- 	}
- 	
- 	return bmp;
- }
+BMP* contrast(BMP* bmp, int cont)
+{
+	int i, j;
+	Pixel p, cp;
+	float f;
+	f  = (259*(cont + 255)) / (255*(259 - cont));
+
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p 			= getPixel(bmp, i, j);
+			cp.Red 		= trunc( f * (p.Red - 128) + 128 );
+			cp.Green 	= trunc( f * (p.Green - 128) + 128 );
+			cp.Blue 	= trunc( f * (p.Blue - 128) + 128 );
+			setPixel(bmp, i, j, cp);
+		}
+	}
+
+	return bmp;
+}
+
+
+ 	/***********
+ 	 SATURATION
+ 	***********/
+BMP* saturation(BMP* bmp, int sat)
+{
+	int i, j;
+	float satu = sat/100.0;
+	Pixel p, sp;
+	HSL hsl;
+
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p = getPixel(bmp, i, j);
+			hsl = RGB2HSL(p);
+			hsl.Sat += hsl.Sat * satu;
+			if(hsl.Sat > 1.0)
+				hsl.Sat = 1.0;
+			if(hsl.Sat < 0.0)
+				hsl.Sat = 0.0;
+			
+			p = HSL2RGB(hsl);
+			setPixel(bmp, i, j, p);
+		}
+	}
+
+	return bmp;
+}
 
 
 	/*****************
@@ -406,8 +484,9 @@ void histogram(BMP* bmp)
 
 int main()
 {
-	BMP* J = loadBMP("robin.bmp");
-	contrast(J, 126);
-	saveBMP(J, "robinC.bmp");
+	BMP* I = loadBMP("robin.bmp");
+	saturation(I, 1000);
+	saveBMP(I, "robinS.bmp");
+	
 	return 0;
 }

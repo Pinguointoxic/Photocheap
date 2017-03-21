@@ -52,8 +52,7 @@ struct BMP
 
 struct HSL
 {
-   float HuePrct;
-   float HueDeg;
+   float Hue;
    float Sat;
    float Light;
 };
@@ -72,6 +71,9 @@ Pixel GREY  =  {126,126,126};
 
 void 	setPixel	(BMP*, int, int, Pixel);   // Place un pixel a des coordonnées données
 Pixel getPixel	(BMP*, int, int);          // Recupere le pixel a des coordonnées données
+HSL RGB2HSL(Pixel);
+Pixel HSL2RGB(HSL);
+float Hue2RGB(float, float, float);
 
 BMP* 	newBMP		(int, int);             // Créer un objet(struct) BMP
 BMP* 	loadBMP		(const char*);          // Charge un fichier .bmp en un objet(struct) BMP
@@ -79,6 +81,7 @@ int 	saveBMP		(BMP*, const char*);    // Sauve un objet(struct) BMP en un fichie
 
 BMP*	greyScale	(BMP*);                 // Passe l'image en niveau de gris
 BMP*  invert      (BMP*);                 // Passe l'image en negatif
-BMP*  contrast  (BMP*, int)                 // Change le contraste de l'image
+BMP*  contrast  (BMP*, int);               // Change le contraste de l'image
+BMP* saturation (BMP*, int);
 BMP*  sobel       (BMP*);                 // Detection des contours par l'operateur de Sobel
 BMP*  pewitt      (BMP*);                 // Detection des contours par l'operateur de Pewitt

@@ -11,7 +11,7 @@ MIT licence
 #include <math.h>
 
 #pragma pack(1)				// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
-#include "photocheap.h"		// Header, contient les definitions des fonctions et structure
+#include "header.h"		// Header, contient les definitions des fonctions et structure
 
 
 /***************************
@@ -70,18 +70,6 @@ HSL RGB2HSL(Pixel p)
 	return hsl;
 }
 
-	/***************
-	 	HSL2RGB
-	***************/
-Pixel HSL2RGB(HSL hsl)
-{
-	Pixel p;
-
-	float c = (1 - fabs(2*hsl.Light-1)) * hsl.Sat;
-	float x = c * fabs(1-hsl.Hue/(100/6) % 2 - 1);
-	float m = hsl.Light - c/2;
-	return p;
-}
 
 
 
@@ -246,6 +234,32 @@ BMP* invert(BMP* bmp)
 }
 
 
+ 	/*********
+ 	 CONTRAST
+ 	*********/
+ BMP* contrast(BMP* bmp, int cont)
+ {
+ 	int i, j;
+ 	Pixel p, cp;
+ 	float f;
+ 	f  = (259*(cont + 255)) / (255*(259 - cont));
+ 	
+ 	for(i=0; i<bmp->width; i++)
+ 	{
+ 		for(j=0; j<bmp->height; j++)
+ 		{
+ 			p 			= getPixel(bmp, i, j);
+ 			cp.Red 		= trunc( f * (p.Red - 128) + 128 );
+  			cp.Green 	= trunc( f * (p.Green - 128) + 128 );
+   			cp.Blue 	= trunc( f * (p.Blue - 128) + 128 );
+   			setPixel(bmp, i, j, cp);
+ 		}
+ 	}
+ 	
+ 	return bmp;
+ }
+
+
 	/*****************
 	 CONTOURS - SOBEL
 	*****************/
@@ -392,8 +406,8 @@ void histogram(BMP* bmp)
 
 int main()
 {
-	Pixel p;
-	p.Red = 255; p.Green = 0; p.Blue = 255;
-	RGB2HSL(p);
+	BMP* J = loadBMP("robin.bmp");
+	contrast(J, 126);
+	saveBMP(J, "robinC.bmp");
 	return 0;
 }

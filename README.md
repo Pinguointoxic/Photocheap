@@ -70,10 +70,8 @@ void setPixel(BMP* bmp, int i, int j, Pixel p)
 - [x] Nuance de gris
 - [x] Negatif
 - [ ] Saturation
-- [ ] Contrastes
-- [ ] Echanger les cannaux de couleur 2 a 2
-- [ ] Echanger les 3 cannaux de couleur cycliquement
-- [ ] \( optionnel ) Redimenssionnement proche voisin
+- [x] Contrastes
+- [ ] Colorisé une image noir et blanc
 
 #### Nuance de gris
 ```C
@@ -93,10 +91,11 @@ BMP* invert(BMP* bmp)
 Il va etre nécessaire de transformer les valeur RGB en HLS (Hue, Lightness, Saturation) pour effectuer les modifications de saturation sur l'image.
 
 #### Contrastes
+```C
+BMP* constrast(BMP* bmp, int contrast)
+```
+   Change le constraste d'une image avec des valeurs entre -255 et +255
 
-#### Echanger 2 cannaux de couleurs
-
-#### Echanger 3 cannaux de couleurs
 
 
 ### Analyse

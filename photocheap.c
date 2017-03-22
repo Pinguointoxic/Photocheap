@@ -513,11 +513,13 @@ int main()
 	BMP* image;
 	
 	CLEAR;
-	printf("*****************************\n");
-	printf("*  Bonjour,                 *\n");
-	printf("*  Bienvenue sur Photocheap *\n");
-	printf("*****************************\n");
-	printf("Nous pouvons vous proposer differentes modifications pour de plus belles images\n\n");
+	printf("####################################\n");
+	printf("#                                  #\n");
+	printf("#     Bonjour,                     #\n");
+	printf("#     Bienvenue sur Photocheap     #\n");
+	printf("#                                  #\n");
+	printf("####################################\n\n");
+	printf("   Nous pouvons vous proposer differentes modifications pour de plus belles images\n\n");
 
 	while(i){
 
@@ -557,9 +559,9 @@ int main()
 				histogram(image);
 			break;
 		}
-		printf("  Vos modification on bien ete effectue \n");	
+		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);	
 		printf("  Voulez vous continuez a modifier vos images?\n");
-		printf("  	1.oui	0.non\n");	
+		printf(CGRN"  	1.oui"CRED"	0.non\n"CRESET);	
 		scanf("%d",&i);
 	}
 

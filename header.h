@@ -2,24 +2,25 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #define trunc(a) ((a) > 255 ? 255 : (a) < 0 ? 0 : (a))
+#define CLEAR    system("clear")
 
 /***************************
 		 STRUCTURES
 ***************************/
 
-typedef struct BMPInfoHeader 	InfoHeader;
+typedef struct BMPInfoHeader	InfoHeader;
 typedef struct BMPHeader		Header;
-typedef struct Pixel			   Pixel;
-typedef struct HSL            HSL;
+typedef struct Pixel			Pixel;
+typedef struct HSL				HSL;
 typedef struct BMP				BMP;
 
 struct BMPInfoHeader
 {
-   int 		Size;				   // Taille du header (40 octets en général)
-   int 		Width;			  	// Largeur de l'image en pixel
+   int 		Size;				// Taille du header (40 octets en général)
+   int 		Width;				// Largeur de l'image en pixel
    int		Height;				// Hauteur de l'image en pixel
-   short	   Planes;           // Nombre de plans de couleurs (toujours 1);
-   short 	Bits;				   // Octers par pixel (24 ici : B - R - G )
+   short	Planes;				// Nombre de plans de couleurs (toujours 1);
+   short 	Bits;				// Octers par pixel (24 ici : B - R - G )
    int	 	Compression;		// Methode de compression, souvent 0
    int	 	ImageSize;			// Taille de l'image (nombre total de pixel)
    int		xResolution;		// Nombre de pixels par metre horizontallement
@@ -30,11 +31,11 @@ struct BMPInfoHeader
 
 struct BMPHeader
 {
-   char 		   Type[2];       // "Nombre magique" : 'BM' pour les images bitmap
-   int 			Size;          // Taille de l'image en octets
-   int 			Reserved;		// octet reserve a l'application qui a creer l'image, inutil
-   int 			Offset;			// Coordonnee du début des pixels
-   InfoHeader 	InfoHeader;
+   char			Type[2];		// "Nombre magique" : 'BM' pour les images bitmap
+   int			Size;			// Taille de l'image en octets
+   int			Reserved;		// octet reserve a l'application qui a creer l'image, inutil
+   int			Offset;			// Coordonnee du début des pixels
+   InfoHeader	InfoHeader;
 } ;
 
 struct Pixel
@@ -46,8 +47,8 @@ struct Pixel
 
 struct BMP
 {
-	int width, height;			// Largeur + Hauteur de l'image
-	Pixel* data;				   // Tableau contenant les pixels
+	int		width, height;		// Largeur + Hauteur de l'image
+	Pixel*	data;				// Tableau contenant les pixels
 };
 
 struct HSL
@@ -69,19 +70,19 @@ Pixel BLACK =  {0,0,0};
 Pixel WHITE =  {255,255,255};
 Pixel GREY  =  {126,126,126};
 
-void 	setPixel	(BMP*, int, int, Pixel);   // Place un pixel a des coordonnées données
-Pixel getPixel	(BMP*, int, int);          // Recupere le pixel a des coordonnées données
-HSL RGB2HSL(Pixel);
-Pixel HSL2RGB(HSL);
-float Hue2RGB(float, float, float);
+void	setPixel	(BMP*, int, int, Pixel);	// Place un pixel a des coordonnées données
+Pixel	getPixel	(BMP*, int, int);			// Recupere le pixel a des coordonnées données
+HSL		RGB2HSL		(Pixel);					// Transforme un Pixel RGB en HSL
+Pixel	HSL2RGB		(HSL);						// Transforme un Pixel HSL en RGB
+float	Hue2RGB		(float, float, float);		// Transforme une teinte (Hue) en couleur RGB
 
-BMP* 	newBMP		(int, int);             // Créer un objet(struct) BMP
-BMP* 	loadBMP		(const char*);          // Charge un fichier .bmp en un objet(struct) BMP
-int 	saveBMP		(BMP*, const char*);    // Sauve un objet(struct) BMP en un fichier .bmp
+BMP* 	newBMP		(int, int);					// Créer un objet(struct) BMP
+BMP* 	loadBMP		(const char*);				// Charge un fichier .bmp en un objet(struct) BMP
+int 	saveBMP		(BMP*, const char*);		// Sauve un objet(struct) BMP en un fichier .bmp
 
-BMP*	greyScale	(BMP*);                 // Passe l'image en niveau de gris
-BMP*  invert      (BMP*);                 // Passe l'image en negatif
-BMP*  contrast  (BMP*, int);               // Change le contraste de l'image
-BMP* saturation (BMP*, int);
-BMP*  sobel       (BMP*);                 // Detection des contours par l'operateur de Sobel
-BMP*  pewitt      (BMP*);                 // Detection des contours par l'operateur de Pewitt
+BMP*	greyScale	(BMP*);						// Passe l'image en niveau de gris
+BMP*	invert		(BMP*);						// Passe l'image en negatif
+BMP*	contrast	(BMP*, int);				// Change le contraste de l'image
+BMP*	saturation	(BMP*, int);				// Modifie la saturation des couleurs
+BMP*	sobel		(BMP*);						// Detection des contours par l'operateur de Sobel
+BMP*	pewitt		(BMP*);						// Detection des contours par l'operateur de Pewitt

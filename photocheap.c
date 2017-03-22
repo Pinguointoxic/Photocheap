@@ -10,7 +10,7 @@ MIT licence
 #include <assert.h>
 #include <math.h>
 
-#pragma pack(1)				// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
+#pragma pack(1)			// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
 #include "header.h"		// Header, contient les definitions des fonctions et structure
 
 
@@ -41,12 +41,12 @@ Pixel getPixel(BMP* bmp, int i, int j)
 	***************/
 HSL RGB2HSL(Pixel p)
 {
-	HSL hsl;
-	float R=((float)p.Red / 255.0), G=((float)p.Green / 255.0), B=((float)p.Blue / 255.0);
-	float r, g, b;
-	float max=max(R, max(G, B));
-	float min=min(R, min(G, B));
-	float delta = max-min;
+	HSL 	hsl;
+	float	R=((float)p.Red / 255.0), G=((float)p.Green / 255.0), B=((float)p.Blue / 255.0);
+	float	r, g, b;
+	float	max		= max(R, max(G, B));
+	float	min		= min(R, min(G, B));
+	float	delta 	= max-min;
 
 	hsl.Light = (max+min)/2.0;
 
@@ -66,14 +66,13 @@ HSL RGB2HSL(Pixel p)
 		if(R == max)
 			hsl.Hue = b-g;
 		else if(G == max)
-			hsl.Hue = (1.0/3.0) + r-b;
+			hsl.Hue = (1/3.0) + r-b;
 		else if(B == max)
-			hsl.Hue = (2.0/3.0) + g-r;
+			hsl.Hue = (2/3.0) + g-r;
 		
 		if(hsl.Hue < 0.0) hsl.Hue +=1;
 		if(hsl.Hue > 1.0) hsl.Hue -=1;
 	}
-	//printf("Hue: %f, Sat:%f, Light:%f\n", hsl.Hue,  hsl.Sat, hsl.Light);
 	return hsl;
 }
 
@@ -86,11 +85,12 @@ Pixel HSL2RGB(HSL hsl)
 {
 	Pixel p;
 	float a, b;
+	
 	if(hsl.Sat == 0.0)
 	{
-		p.Red = hsl.Light * 255;
+		p.Red	= hsl.Light * 255;
 		p.Green = hsl.Light * 255;
-		p.Blue = hsl.Light * 255;
+		p.Blue	= hsl.Light * 255;
 	}
 	else
 	{
@@ -101,11 +101,10 @@ Pixel HSL2RGB(HSL hsl)
 			
 		a = 2 * hsl.Light - b;
 		
-		p.Red = 255 * Hue2RGB(a, b, hsl.Hue+(1/3.0));
-		p.Green  = 255 * Hue2RGB(a, b, hsl.Hue);
-		p.Blue = 255 * Hue2RGB(a, b, hsl.Hue-(1/3.0)); 
+		p.Red	= 255 * Hue2RGB(a, b, hsl.Hue+(1/3.0));
+		p.Green = 255 * Hue2RGB(a, b, hsl.Hue);
+		p.Blue	= 255 * Hue2RGB(a, b, hsl.Hue-(1/3.0)); 
 	}
-	//printf("Red: %d, Green:%d, Blue:%d\n", p.Red, p.Green, p.Blue);
 	return p;
 }
 
@@ -167,9 +166,9 @@ BMP* loadBMP(const char* filename)
 		for(i=0; i<bmp->width; i++)
 		{
 			fread(&bgrpix, 1, 3, bmp_input);
-			p.Red 	= bgrpix[2];
+			p.Red	= bgrpix[2];
 			p.Green = bgrpix[1];
-			p.Blue 	= bgrpix[0];
+			p.Blue	= bgrpix[0];
 			setPixel(bmp, i, bmp->height-j-1, p);
 		}
 		fread(&bgrpix, 1, padding, bmp_input);
@@ -183,11 +182,11 @@ BMP* loadBMP(const char* filename)
 	*************/
 int saveBMP(BMP* bmp, const char* filename)
 {
-	Header 			header;
+	Header			header;
 	Pixel			p;
-	int 			i, j, padding, dataSize;
-	unsigned char 	bgrpix[3];
-	char 			corr[4] = {0,3,2,1};
+	int				i, j, padding, dataSize;
+	unsigned char	bgrpix[3];
+	char			corr[4] = {0,3,2,1};
 
 	FILE* bmp_output = fopen(filename, "wb");
 	if(!bmp_output)
@@ -197,18 +196,18 @@ int saveBMP(BMP* bmp, const char* filename)
 	}
 	memset(&header, 0, sizeof(Header));
 
-	header.Type[0] 				= 'B';
-	header.Type[1] 				= 'M';
-	header.Offset 				= sizeof(Header);
-	header.InfoHeader.Size 		= sizeof(InfoHeader);
-	header.InfoHeader.Width 	= bmp->width;
-	header.InfoHeader.Height 	= bmp->height;
-	header.InfoHeader.Planes 	= 1;
-	header.InfoHeader.Bits 		= 24;
-	padding 					= corr[(3*header.InfoHeader.Width)%4];
-	dataSize 					= 3*header.InfoHeader.Height*header.InfoHeader.Width + header.InfoHeader.Height*padding;
-	header.InfoHeader.ImageSize = dataSize;
-	header.Size 				= header.Offset + header.InfoHeader.ImageSize;
+	header.Type[0]				= 'B';
+	header.Type[1]				= 'M';
+	header.Offset				= sizeof(Header);
+	header.InfoHeader.Size		= sizeof(InfoHeader);
+	header.InfoHeader.Width		= bmp->width;
+	header.InfoHeader.Height	= bmp->height;
+	header.InfoHeader.Planes	= 1;
+	header.InfoHeader.Bits		= 24;
+	padding						= corr[(3*header.InfoHeader.Width)%4];
+	dataSize					= 3*header.InfoHeader.Height*header.InfoHeader.Width + header.InfoHeader.Height*padding;
+	header.InfoHeader.ImageSize	= dataSize;
+	header.Size					= header.Offset + header.InfoHeader.ImageSize;
 
 	fwrite(&header, sizeof(Header), 1, bmp_output);
 
@@ -216,10 +215,10 @@ int saveBMP(BMP* bmp, const char* filename)
 	{
 		for(i=0; i<bmp->width; i++)
 		{
-			p = getPixel(bmp, i, bmp->height-j-1);
-			bgrpix[0] = p.Blue;
-			bgrpix[1] = p.Green;
-			bgrpix[2] = p.Red;
+			p 			= getPixel(bmp, i, bmp->height-j-1);
+			bgrpix[0]	= p.Blue;
+			bgrpix[1]	= p.Green;
+			bgrpix[2]	= p.Red;
 			fwrite(&bgrpix, 1, 3, bmp_output);
 		}
 		bgrpix[0] = bgrpix[1] = bgrpix[2] = 255;
@@ -229,6 +228,22 @@ int saveBMP(BMP* bmp, const char* filename)
 	return 0;
 }
 
+	/*************
+	 COPIER IMAGE
+	*************/
+BMP* copyBMP(BMP* bmp)
+{
+	int i, j;
+	BMP* new = newBMP(bmp->width, bmp->height);
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			setPixel(new, i, j, getPixel(bmp, i, j));
+		}
+	}
+	return new;
+}
 
 
 /***************************
@@ -240,21 +255,22 @@ int saveBMP(BMP* bmp, const char* filename)
 	***************/
 BMP* greyScale(BMP* bmp)
 {
+	BMP* bmpTemp = copyBMP(bmp);
 	unsigned char grey;
 	Pixel p;
 	int i, j;
 
-	for(i=0; i<bmp->width; i++)
+	for(i=0; i<bmpTemp->width; i++)
 	{
-		for(j=0; j<bmp->height; j++)
+		for(j=0; j<bmpTemp->height; j++)
 		{
-			p 		= getPixel(bmp, i, j);
-			grey 	= p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
-			p.Blue 	= p.Red = p.Green = grey;
-			setPixel(bmp, i, j, p);
+			p		= getPixel(bmpTemp, i, j);
+			grey	= p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+			p.Blue	= p.Red = p.Green = grey;
+			setPixel(bmpTemp, i, j, p);
 		}
 	}
-	return bmp;
+	return bmpTemp;
 }
 
 
@@ -263,6 +279,7 @@ BMP* greyScale(BMP* bmp)
 	********/
 BMP* invert(BMP* bmp)
 {
+	BMP* bmpTemp = copyBMP(bmp);
 	int i, j;
 	Pixel p;
 
@@ -270,14 +287,14 @@ BMP* invert(BMP* bmp)
 	{
 		for(j=0; j<bmp->height; j++)
 		{
-			p 		= getPixel(bmp, i, j);
+			p 		= getPixel(bmpTemp, i, j);
 			p.Red 	= 255-p.Red;
 			p.Green = 255-p.Green;
 			p.Blue 	= 255-p.Blue;
-			setPixel(bmp, i, j, p);
+			setPixel(bmpTemp, i, j, p);
 		}
 	}
-	return bmp;
+	return bmpTemp;
 }
 
 
@@ -286,6 +303,7 @@ BMP* invert(BMP* bmp)
  	*********/
 BMP* contrast(BMP* bmp, int cont)
 {
+	BMP* bmpTemp = copyBMP(bmp);
 	int i, j;
 	Pixel p, cp;
 	float f;
@@ -295,15 +313,15 @@ BMP* contrast(BMP* bmp, int cont)
 	{
 		for(j=0; j<bmp->height; j++)
 		{
-			p 			= getPixel(bmp, i, j);
+			p 			= getPixel(bmpTemp, i, j);
 			cp.Red 		= trunc( f * (p.Red - 128) + 128 );
 			cp.Green 	= trunc( f * (p.Green - 128) + 128 );
 			cp.Blue 	= trunc( f * (p.Blue - 128) + 128 );
-			setPixel(bmp, i, j, cp);
+			setPixel(bmpTemp, i, j, cp);
 		}
 	}
 
-	return bmp;
+	return bmpTemp;
 }
 
 
@@ -312,6 +330,7 @@ BMP* contrast(BMP* bmp, int cont)
  	***********/
 BMP* saturation(BMP* bmp, int sat)
 {
+	BMP* bmpTemp = copyBMP(bmp);
 	int i, j;
 	float satu = sat/100.0;
 	Pixel p, sp;
@@ -321,7 +340,7 @@ BMP* saturation(BMP* bmp, int sat)
 	{
 		for(j=0; j<bmp->height; j++)
 		{
-			p = getPixel(bmp, i, j);
+			p = getPixel(bmpTemp, i, j);
 			hsl = RGB2HSL(p);
 			hsl.Sat += hsl.Sat * satu;
 			if(hsl.Sat > 1.0)
@@ -330,11 +349,11 @@ BMP* saturation(BMP* bmp, int sat)
 				hsl.Sat = 0.0;
 			
 			p = HSL2RGB(hsl);
-			setPixel(bmp, i, j, p);
+			setPixel(bmpTemp, i, j, p);
 		}
 	}
 
-	return bmp;
+	return bmpTemp;
 }
 
 
@@ -343,7 +362,9 @@ BMP* saturation(BMP* bmp, int sat)
 	*****************/
 BMP* sobel(BMP* bmp)
 {
-	bmp 		= greyScale(bmp);
+	BMP* bmpTemp = copyBMP(bmp);
+	bmpTemp = greyScale(bmpTemp);
+	
 	BMP* border = newBMP(bmp->width, bmp->height);
 	Pixel 		p;
 	int 		sobel_x[3][3] = {{-1,0,1},{-2,0,2},{-1,0,1}};
@@ -354,13 +375,14 @@ BMP* sobel(BMP* bmp)
 	{
 		for(j=1; j<bmp->height-1; j++)
 		{
-			px = 	(sobel_x[0][0] * getPixel(bmp,i-1,j-1).Red) + (sobel_x[0][1] * getPixel(bmp,i,j-1).Red) + (sobel_x[0][2] * getPixel(bmp,i+1,j-1).Red) 	+
-					(sobel_x[1][0] * getPixel(bmp,i-1,j).Red)   + (sobel_x[1][1] * getPixel(bmp,i,j).Red)   + (sobel_x[1][2] * getPixel(bmp,i+1,j).Red) 	+
-              		(sobel_x[2][0] * getPixel(bmp,i-1,j+1).Red) + (sobel_x[2][1] * getPixel(bmp,i,j+1).Red) + (sobel_x[2][2] * getPixel(bmp,i+1,j+1).Red);
+            px = 	(sobel_x[0][0] * getPixel(bmpTemp,i-1,j-1).Red) + (sobel_x[0][1] * getPixel(bmpTemp,i,j-1).Red) + (sobel_x[0][2] * getPixel(bmpTemp,i+1,j-1).Red) 	+
+					(sobel_x[1][0] * getPixel(bmpTemp,i-1,j).Red)   + (sobel_x[1][1] * getPixel(bmpTemp,i,j).Red)   + (sobel_x[1][2] * getPixel(bmpTemp,i+1,j).Red) 	+
+              		(sobel_x[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (sobel_x[2][1] * getPixel(bmpTemp,i,j+1).Red) + (sobel_x[2][2] * getPixel(bmpTemp,i+1,j+1).Red);
 
-			py = 	(sobel_y[0][0] * getPixel(bmp,i-1,j-1).Red) + (sobel_y[0][1] * getPixel(bmp,i,j-1).Red) + (sobel_y[0][2] * getPixel(bmp,i+1,j-1).Red) 	+
-              		(sobel_y[1][0] * getPixel(bmp,i-1,j).Red)   + (sobel_y[1][1] * getPixel(bmp,i,j).Red)   + (sobel_y[1][2] * getPixel(bmp,i+1,j).Red) 	+
-              		(sobel_y[2][0] * getPixel(bmp,i-1,j+1).Red) + (sobel_y[2][1] * getPixel(bmp,i,j+1).Red) + (sobel_y[2][2] * getPixel(bmp,i+1,j+1).Red);
+			py = 	(sobel_y[0][0] * getPixel(bmpTemp,i-1,j-1).Red) + (sobel_y[0][1] * getPixel(bmpTemp,i,j-1).Red) + (sobel_y[0][2] * getPixel(bmpTemp,i+1,j-1).Red) 	+
+              		(sobel_y[1][0] * getPixel(bmpTemp,i-1,j).Red)   + (sobel_y[1][1] * getPixel(bmpTemp,i,j).Red)   + (sobel_y[1][2] * getPixel(bmpTemp,i+1,j).Red) 	+
+              		(sobel_y[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (sobel_y[2][1] * getPixel(bmpTemp,i,j+1).Red) + (sobel_y[2][2] * getPixel(bmpTemp,i+1,j+1).Red);	
+             
 			p.Red = p.Green = p.Blue = (unsigned char)sqrt((px * px) + (py * py));
 			setPixel(border, i, j, p);
 		}
@@ -374,7 +396,9 @@ BMP* sobel(BMP* bmp)
 	*******************/
 BMP* pewitt(BMP* bmp)
 {
-	bmp 	= greyScale(bmp);
+	BMP* bmpTemp = copyBMP(bmp);
+	bmpTemp = greyScale(bmpTemp);
+	
 	BMP* 	border = newBMP(bmp->width, bmp->height);
 	Pixel 	p;
 	int 	pewitt_x[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
@@ -385,13 +409,13 @@ BMP* pewitt(BMP* bmp)
 	{
 		for(j=1; j<bmp->height-1; j++)
 		{
-			px = 	(pewitt_x[0][0] * getPixel(bmp,i-1,j-1).Red) + (pewitt_x[0][1] * getPixel(bmp,i,j-1).Red) + (pewitt_x[0][2] * getPixel(bmp,i+1,j-1).Red) 	+
-					(pewitt_x[1][0] * getPixel(bmp,i-1,j).Red)   + (pewitt_x[1][1] * getPixel(bmp,i,j).Red)   + (pewitt_x[1][2] * getPixel(bmp,i+1,j).Red) 	+
-              		(pewitt_x[2][0] * getPixel(bmp,i-1,j+1).Red) + (pewitt_x[2][1] * getPixel(bmp,i,j+1).Red) + (pewitt_x[2][2] * getPixel(bmp,i+1,j+1).Red);
+			px = 	(pewitt_x[0][0] * getPixel(bmpTemp,i-1,j-1).Red) + (pewitt_x[0][1] * getPixel(bmpTemp,i,j-1).Red) + (pewitt_x[0][2] * getPixel(bmpTemp,i+1,j-1).Red) 	+
+					(pewitt_x[1][0] * getPixel(bmpTemp,i-1,j).Red)   + (pewitt_x[1][1] * getPixel(bmpTemp,i,j).Red)   + (pewitt_x[1][2] * getPixel(bmpTemp,i+1,j).Red) 	+
+              		(pewitt_x[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (pewitt_x[2][1] * getPixel(bmpTemp,i,j+1).Red) + (pewitt_x[2][2] * getPixel(bmpTemp,i+1,j+1).Red);
 
-			py = 	(pewitt_y[0][0] * getPixel(bmp,i-1,j-1).Red) + (pewitt_y[0][1] * getPixel(bmp,i,j-1).Red) + (pewitt_y[0][2] * getPixel(bmp,i+1,j-1).Red) 	+
-              		(pewitt_y[1][0] * getPixel(bmp,i-1,j).Red)   + (pewitt_y[1][1] * getPixel(bmp,i,j).Red)   + (pewitt_y[1][2] * getPixel(bmp,i+1,j).Red) 	+
-              		(pewitt_y[2][0] * getPixel(bmp,i-1,j+1).Red) + (pewitt_y[2][1] * getPixel(bmp,i,j+1).Red) + (pewitt_y[2][2] * getPixel(bmp,i+1,j+1).Red);
+			py = 	(pewitt_y[0][0] * getPixel(bmpTemp,i-1,j-1).Red) + (pewitt_y[0][1] * getPixel(bmpTemp,i,j-1).Red) + (pewitt_y[0][2] * getPixel(bmpTemp,i+1,j-1).Red) 	+
+              		(pewitt_y[1][0] * getPixel(bmpTemp,i-1,j).Red)   + (pewitt_y[1][1] * getPixel(bmpTemp,i,j).Red)   + (pewitt_y[1][2] * getPixel(bmpTemp,i+1,j).Red) 	+
+              		(pewitt_y[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (pewitt_y[2][1] * getPixel(bmpTemp,i,j+1).Red) + (pewitt_y[2][2] * getPixel(bmpTemp,i+1,j+1).Red);
 			p.Red = p.Green = p.Blue = (unsigned char)sqrt((px * px) + (py * py));
 			setPixel(border, i, j, p);
 		}
@@ -484,9 +508,62 @@ void histogram(BMP* bmp)
 
 int main()
 {
-	BMP* I = loadBMP("robin.bmp");
-	saturation(I, 1000);
-	saveBMP(I, "robinS.bmp");
+	char nameimage[200];
+	int choice = 0, num=0, i=1;
+	BMP* image;
 	
+	CLEAR;
+	printf("*****************************\n");
+	printf("*  Bonjour,                 *\n");
+	printf("*  Bienvenue sur Photocheap *\n");
+	printf("*****************************\n");
+	printf("Nous pouvons vous proposer differentes modifications pour de plus belles images\n\n");
+
+	while(i){
+
+		printf("  Veuillez donnez le nom de votre image:\n");
+		scanf("%s",nameimage);
+		image = loadBMP(nameimage);
+		printf("\n");	
+		printf("  Veuillez choisir vos modification :\n \n");
+		printf("  1. Niveau de gris\n  2. Negatif\n  3. Contrast\n  4. Saturation\n  5. Contours\n  6. Histogramme\n");
+		scanf("%d", &choice);
+		switch(choice){
+			case 1:
+				image = greyScale(image);
+				saveBMP(image, "gris.bmp");
+			break;
+			case 2:
+				image = invert(image);
+				saveBMP(image, "nega.bmp");
+			break;
+			case 3: 
+				image = contrast(image,num);
+				printf("  Donnez la valeur des contraste que vous desirez: \n");
+				scanf("%d", &num);
+				saveBMP(image, "contraste.bmp");
+			break;
+			case 4: 
+				image = saturation(image, num);
+				printf("  Donnez la valeur de saturation que vous desirez: \n");
+				scanf("%d", &num);
+				saveBMP(image, "satu.bmp");
+			break;
+			case 5: 
+				image = pewitt(image);
+				saveBMP(image, "contour.bmp");
+			break;
+			case 6: 
+				histogram(image);
+			break;
+		}
+		printf("  Vos modification on bien ete effectue \n");	
+		printf("  Voulez vous continuez a modifier vos images?\n");
+		printf("  	1.oui	0.non\n");	
+		scanf("%d",&i);
+	}
+
+	printf("  Merci de votre visite et a bientot ! :)\n");
+
 	return 0;
 }

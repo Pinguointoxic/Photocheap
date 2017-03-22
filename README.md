@@ -45,6 +45,12 @@ int saveBMP(BMP* image, const char* nomDeLimage)
    Enregistre une structure BMP en un fichier bitmap.
    Remplit le _header_ et l'_infoheader_ avec toutes les valeurs necessaires (taille, nombre magique, palette, poids et octets ...)
    
+#### Copier une image BMP
+```C
+BMP* copyBMP(BMP* bmp)
+```
+   Créer une copie de l'image passé en paramètre. Utile pour ne pas effectuer les modifications directement sur l'image d'origine.
+   
 #### Récupérer les valeurs d'un pixel
 ```C
 Pixel getPixel(BMP* bmp, int i, int j)

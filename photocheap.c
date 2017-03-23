@@ -9,6 +9,8 @@ MIT licence
 #include <string.h>
 #include <assert.h>
 #include <math.h>
+#include <dirent.h>
+#include <stdarg.h>
 
 #pragma pack(1)			// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
 #include "header.h"		// Header, contient les definitions des fonctions et structure
@@ -58,18 +60,18 @@ HSL RGB2HSL(Pixel p)
 			hsl.Sat = delta / (max+min);
 		else
 			hsl.Sat = delta / (2-delta);
-			
+
 		r = ((max - R) / 6.0 ) + (delta / 2.0) / delta;
 		g = ((max - G) / 6.0 ) + (delta / 2.0) / delta;
 		b = ((max - B) / 6.0 ) + (delta / 2.0) / delta;
-		
+
 		if(R == max)
 			hsl.Hue = b-g;
 		else if(G == max)
 			hsl.Hue = (1/3.0) + r-b;
 		else if(B == max)
 			hsl.Hue = (2/3.0) + g-r;
-		
+
 		if(hsl.Hue < 0.0) hsl.Hue +=1;
 		if(hsl.Hue > 1.0) hsl.Hue -=1;
 	}
@@ -85,7 +87,7 @@ Pixel HSL2RGB(HSL hsl)
 {
 	Pixel p;
 	float a, b;
-	
+
 	if(hsl.Sat == 0.0)
 	{
 		p.Red	= hsl.Light * 255;
@@ -98,12 +100,12 @@ Pixel HSL2RGB(HSL hsl)
 			b = hsl.Light * (1 + hsl.Sat);
 		else
 			b = (hsl.Light+hsl.Sat) - (hsl.Light*hsl.Sat);
-			
+
 		a = 2 * hsl.Light - b;
-		
+
 		p.Red	= 255 * Hue2RGB(a, b, hsl.Hue+(1/3.0));
 		p.Green = 255 * Hue2RGB(a, b, hsl.Hue);
-		p.Blue	= 255 * Hue2RGB(a, b, hsl.Hue-(1/3.0)); 
+		p.Blue	= 255 * Hue2RGB(a, b, hsl.Hue-(1/3.0));
 	}
 	return p;
 }
@@ -347,7 +349,7 @@ BMP* saturation(BMP* bmp, int sat)
 				hsl.Sat = 1.0;
 			if(hsl.Sat < 0.0)
 				hsl.Sat = 0.0;
-			
+
 			p = HSL2RGB(hsl);
 			setPixel(bmpTemp, i, j, p);
 		}
@@ -364,7 +366,7 @@ BMP* sobel(BMP* bmp)
 {
 	BMP* bmpTemp = copyBMP(bmp);
 	bmpTemp = greyScale(bmpTemp);
-	
+
 	BMP* border = newBMP(bmp->width, bmp->height);
 	Pixel 		p;
 	int 		sobel_x[3][3] = {{-1,0,1},{-2,0,2},{-1,0,1}};
@@ -381,8 +383,8 @@ BMP* sobel(BMP* bmp)
 
 			py = 	(sobel_y[0][0] * getPixel(bmpTemp,i-1,j-1).Red) + (sobel_y[0][1] * getPixel(bmpTemp,i,j-1).Red) + (sobel_y[0][2] * getPixel(bmpTemp,i+1,j-1).Red) 	+
               		(sobel_y[1][0] * getPixel(bmpTemp,i-1,j).Red)   + (sobel_y[1][1] * getPixel(bmpTemp,i,j).Red)   + (sobel_y[1][2] * getPixel(bmpTemp,i+1,j).Red) 	+
-              		(sobel_y[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (sobel_y[2][1] * getPixel(bmpTemp,i,j+1).Red) + (sobel_y[2][2] * getPixel(bmpTemp,i+1,j+1).Red);	
-             
+              		(sobel_y[2][0] * getPixel(bmpTemp,i-1,j+1).Red) + (sobel_y[2][1] * getPixel(bmpTemp,i,j+1).Red) + (sobel_y[2][2] * getPixel(bmpTemp,i+1,j+1).Red);
+
 			p.Red = p.Green = p.Blue = (unsigned char)sqrt((px * px) + (py * py));
 			setPixel(border, i, j, p);
 		}
@@ -398,7 +400,7 @@ BMP* pewitt(BMP* bmp)
 {
 	BMP* bmpTemp = copyBMP(bmp);
 	bmpTemp = greyScale(bmpTemp);
-	
+
 	BMP* 	border = newBMP(bmp->width, bmp->height);
 	Pixel 	p;
 	int 	pewitt_x[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
@@ -506,12 +508,144 @@ void histogram(BMP* bmp)
 
 }
 
+BMP* colorize(BMP* bmp)
+{
+	BMP* bmpTemp = copyBMP(bmp);
+	FILE* fp = fopen("fallColor.txt", "r");
+	Pixel p, cp;
+	int grey, ch, nbLine=0, i, j;
+	int tab[3][256] = {{0}};
+	char line[15] = "";
+
+	do{
+		ch = fgetc(fp);
+		if(ch == '\n')
+			nbLine++;
+	}while(ch != EOF);
+
+	i=0;
+	while(fgets(line, 15, fp) != NULL)
+	{
+		sscanf(line, "%d %d %d %d", &ch, &tab[0][i],&tab[1][i],&tab[2][i]);
+		printf("%d %d %d\n", tab[0][i],tab[1][i],tab[2][i]);
+		i++;
+		printf("%s\n", line);
+	}
+
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p = getPixel(bmp, i, j);
+			grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+
+			cp.Red = tab[0][grey];
+			cp.Green = tab[1][grey];
+			cp.Blue = tab[2][grey];
+			setPixel(bmpTemp, i, j, cp);
+		}
+	}
+	fclose(fp);
+
+	return bmpTemp;
+}
+
+int meanColorOfFolder(char* folderName)
+{
+	DIR *dir;
+	FILE* fp = fopen("fallColor.txt", "w+");
+	BMP* bmpTemp;
+	Pixel p;
+	int tab[3][256] = {{0}};
+	float tabPic[3][256] = {{0}};
+	int grey, i, j, nbIm=0;
+	struct dirent *ent;
+
+	if ((dir = opendir (folderName)) != NULL)
+	{
+		while ((ent = readdir (dir)) != NULL)
+		{
+			if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+			{
+				bmpTemp = loadBMP(concat(2, folderName, ent->d_name));
+				for(i=0; i<bmpTemp->width; i++)
+				{
+					for(j=0; j<bmpTemp->height; j++)
+					{
+						p = getPixel(bmpTemp, i, j);
+						grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+						tabPic[0][grey] += p.Red;
+						tabPic[1][grey] += p.Green;
+						tabPic[2][grey] += p.Blue;
+					}
+				}
+				for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
+				{
+					tab[0][i] += tabPic[0][i] / (1.0*(bmpTemp->width * bmpTemp->height));
+					tab[1][i] += tabPic[1][i] / (1.0*(bmpTemp->width * bmpTemp->height));
+					tab[2][i] += tabPic[2][i] / (1.0*(bmpTemp->width * bmpTemp->height));
+				}
+				for(i=0; i<256; i++) // Remise a 0 du tableau propre a l'image
+				{
+					tabPic[0][i] = 0;
+					tabPic[1][i] = 0;
+					tabPic[2][i] = 0;
+				}
+				nbIm++;
+			}
+		}
+		closedir (dir);
+	}
+	else
+	{
+		perror ("");
+		return EXIT_FAILURE;
+	}
+
+	for(i=0; i<256; i++) // Moyenne finale des couleurs par le nombre d'image totale anlyser
+	{
+		tab[0][i] /= (1.0*nbIm);
+		tab[1][i] /= (1.0*nbIm);
+		tab[2][i] /= (1.0*nbIm);
+		fprintf(fp, "%d %d %d %d\n", i, tab[0][i], tab[1][i], tab[2][i]);
+	}
+	fclose(fp);
+
+	return 1;
+}
+
+char* concat(int count, ...)
+{
+    va_list ap;
+    int i;
+
+    int len = 1; // room for NULL
+    va_start(ap, count);
+    for(i=0 ; i<count ; i++)
+        len += strlen(va_arg(ap, char*));
+    va_end(ap);
+
+    char *merged = calloc(sizeof(char),len);
+    int null_pos = 0;
+
+    va_start(ap, count);
+    for(i=0 ; i<count ; i++)
+    {
+        char *s = va_arg(ap, char*);
+        strcpy(merged+null_pos, s);
+        null_pos += strlen(s);
+    }
+    va_end(ap);
+
+    return merged;
+}
+
 int main()
 {
 	char nameimage[200];
 	int choice = 0, num=0, i=1;
 	BMP* image;
-	
+
 	CLEAR;
 	printf("####################################\n");
 	printf("#                                  #\n");
@@ -526,9 +660,9 @@ int main()
 		printf("  Veuillez donnez le nom de votre image:\n");
 		scanf("%s",nameimage);
 		image = loadBMP(nameimage);
-		printf("\n");	
+		printf("\n");
 		printf("  Veuillez choisir vos modification :\n \n");
-		printf("  1. Niveau de gris\n  2. Negatif\n  3. Contrast\n  4. Saturation\n  5. Contours\n  6. Histogramme\n");
+		printf("  1. Niveau de gris\n  2. Negatif\n  3. Contrast\n  4. Saturation\n  5. Contours\n  6. Histogramme\n  7. Colorisation\n");
 		scanf("%d", &choice);
 		switch(choice){
 			case 1:
@@ -539,29 +673,34 @@ int main()
 				image = invert(image);
 				saveBMP(image, "nega.bmp");
 			break;
-			case 3: 
+			case 3:
 				image = contrast(image,num);
 				printf("  Donnez la valeur des contraste que vous desirez: \n");
 				scanf("%d", &num);
 				saveBMP(image, "contraste.bmp");
 			break;
-			case 4: 
+			case 4:
 				image = saturation(image, num);
 				printf("  Donnez la valeur de saturation que vous desirez: \n");
 				scanf("%d", &num);
 				saveBMP(image, "satu.bmp");
 			break;
-			case 5: 
+			case 5:
 				image = pewitt(image);
 				saveBMP(image, "contour.bmp");
 			break;
-			case 6: 
+			case 6:
 				histogram(image);
 			break;
+			case 7:
+				//meanColorOfFolder("./src/fallPictures/");
+				image = colorize(image);
+				saveBMP(image, "colorized.bmp");
+			break;
 		}
-		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);	
+		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);
 		printf("  Voulez vous continuez a modifier vos images?\n");
-		printf(CGRN"  	1.oui"CRED"	0.non\n"CRESET);	
+		printf(CGRN"  	1.oui"CRED"	0.non\n"CRESET);
 		scanf("%d",&i);
 	}
 

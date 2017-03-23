@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <stdarg.h>       // va_*
+/*#include <stdarg.h>
 
 char* concat(int count, ...)
 {
@@ -31,21 +31,22 @@ char* concat(int count, ...)
     va_end(ap);
 
     return merged;
-}
+}*/
 
 int main()
 {
 	DIR *dir;
-	FILE* fp = fopen("fall.txt", "w");
-	int i = 1;
+	FILE* fp = fopen("fall.txt", "w+");
+	int ch, nbLine;
+	char* nomImage;
 	struct dirent *ent;
-	if ((dir = opendir ("./img/")) != NULL)
+
+	if ((dir = opendir ("./src/fallPictures/")) != NULL)
 	{
 		while ((ent = readdir (dir)) != NULL)
 		{
 			if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
-				fprintf (fp, "%d %s\n", i, ent->d_name);
-				i++;
+				fprintf (fp, "%s\n", ent->d_name);
 		}
 		closedir (dir);
 	}
@@ -54,9 +55,7 @@ int main()
 		perror ("");
 	return EXIT_FAILURE;
 	}
-	
-	printf("%s", concat(2, "Bonjour ", "Etienne"));
-	
+
 	return 0;
 }
 

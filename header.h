@@ -95,3 +95,7 @@ BMP*	contrast	(BMP*, int);				// Change le contraste de l'image
 BMP*	saturation	(BMP*, int);				// Modifie la saturation des couleurs
 BMP*	sobel		(BMP*);						// Detection des contours par l'operateur de Sobel
 BMP*	pewitt		(BMP*);						// Detection des contours par l'operateur de Pewitt
+BMP* colorize  (BMP*);
+
+char* concat(int count, ...);
+int meanColorOfFolder(char*);

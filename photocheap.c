@@ -174,6 +174,7 @@ BMP* loadBMP(const char* filename)
 		fread(&bgrpix, 1, padding, bmp_input);
 	}
 	fclose(bmp_input);
+	
 	return bmp;
 }
 
@@ -528,32 +529,32 @@ int main()
 		image = loadBMP(nameimage);
 		printf("\n");	
 		printf("  Veuillez choisir vos modification :\n \n");
-		printf("  1. Niveau de gris\n  2. Negatif\n  3. Contrast\n  4. Saturation\n  5. Contours\n  6. Histogramme\n");
+		printf("  "CBLU"1."CRESET" Niveau de gris\n  "CBLU"2."CRESET" Negatif\n  "CBLU"3."CRESET" Contrast\n  "CBLU"4."CRESET" Saturation\n  "CBLU"5."CRESET" Contours\n  "CBLU"6."CRESET" Histogramme\n");
 		scanf("%d", &choice);
 		switch(choice){
 			case 1:
 				image = greyScale(image);
-				saveBMP(image, "gris.bmp");
+				saveBMP(image, "./Gallery/gris.bmp");
 			break;
 			case 2:
 				image = invert(image);
-				saveBMP(image, "nega.bmp");
+				saveBMP(image, "./Gallery/nega.bmp");
 			break;
 			case 3: 
 				image = contrast(image,num);
 				printf("  Donnez la valeur des contraste que vous desirez: \n");
 				scanf("%d", &num);
-				saveBMP(image, "contraste.bmp");
+				saveBMP(image, "./Gallery/contraste.bmp");
 			break;
 			case 4: 
 				image = saturation(image, num);
 				printf("  Donnez la valeur de saturation que vous desirez: \n");
 				scanf("%d", &num);
-				saveBMP(image, "satu.bmp");
+				saveBMP(image, "./Gallery/satu.bmp");
 			break;
 			case 5: 
 				image = pewitt(image);
-				saveBMP(image, "contour.bmp");
+				saveBMP(image, "./Gallery/contour.bmp");
 			break;
 			case 6: 
 				histogram(image);

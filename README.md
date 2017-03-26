@@ -81,7 +81,7 @@ Pixel HSL2RGB(HSL hsl)
 - [x] Negatif
 - [x] Saturation
 - [x] Contrastes
-- [ ] Colorisé une image noir et blanc
+- [x] Colorisé une image noir et blanc
 
 #### Nuance de gris
 ```C
@@ -109,7 +109,12 @@ BMP* constrast(BMP* bmp, int contrast)
 ```
    Change le constraste d'une image avec des valeurs entre -255 et +255
 
-
+### Colorisation
+```C
+BMP* colorizeRGB(BMP* bmp)
+BMP* colorizeHSL(BMP* bmp)
+```
+   Colorise une image en nuance de gris grace a un tableau regroupant le triplet moyen (RGB ou HSL) pour chaque valeur de gris. Le tableau est basé sur une analyse via la fonction ```C meanColorOfFolder()``` sur un dossier contenant plusieur image d'un même theme.
 
 ### Analyse
 - [x] Contour \(Sobel + Pewitt)
@@ -133,7 +138,7 @@ void histogram(BMP* bmp)
 ```C
 int meanColorOfFolder(int saison, char* nomDuDossier)
 ```
-   Créer deux fichiers txt (version RGB et HSL) de 256 lignes. Chacunes correspond a une nuance de gris (0->255), et a chaque nuance on y associe le triplet de couleur RGB (ou HSL) moyen lui correspondant.
+   Créer deux fichiers txt (version RGB et HSL) de 256 lignes. Chacunes correspond a une nuance de gris (0->255), et a chaque nuance on y associe le triplet de couleur RGB (ou HSL) moyen lui correspondant. On analyse plusieurs images d'un même thème, dans un dossier (nomDuDossier) pour avoir une moyenne la plus réaliste possible. 
    
 ## License
 

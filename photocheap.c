@@ -3,7 +3,6 @@ Robin Dell et Emeline Ehles
 MIT licence
 *********************************/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,8 +76,6 @@ HSL RGB2HSL(Pixel p)
 	}
 	return hsl;
 }
-
-
 
 	/***************
 	 	HSL2RGB
@@ -176,7 +173,7 @@ BMP* loadBMP(const char* filename)
 		fread(&bgrpix, 1, padding, bmp_input);
 	}
 	fclose(bmp_input);
-	
+
 	return bmp;
 }
 
@@ -276,7 +273,6 @@ BMP* greyScale(BMP* bmp)
 	return bmpTemp;
 }
 
-
 	/********
 	 NEGATIF
 	********/
@@ -299,7 +295,6 @@ BMP* invert(BMP* bmp)
 	}
 	return bmpTemp;
 }
-
 
  	/*********
  	 CONTRAST
@@ -326,7 +321,6 @@ BMP* contrast(BMP* bmp, int cont)
 
 	return bmpTemp;
 }
-
 
  	/***********
  	 SATURATION
@@ -358,7 +352,6 @@ BMP* saturation(BMP* bmp, int sat)
 
 	return bmpTemp;
 }
-
 
 	/*****************
 	 CONTOURS - SOBEL
@@ -393,7 +386,6 @@ BMP* sobel(BMP* bmp)
 	return border;
 }
 
-
 	/******************
 	 CONTOURS - PEWITT
 	*******************/
@@ -424,6 +416,90 @@ BMP* pewitt(BMP* bmp)
 		}
 	}
 	return border;
+}
+
+	/*****************
+	 COLORISATION RGB
+	*****************/
+BMP* colorizeRGB(BMP* bmp)
+{
+	BMP* bmpTemp = copyBMP(bmp);
+	FILE* fp = fopen("./src/spring/colorRGB.txt", "r");
+	Pixel p;
+	int grey, i, j;
+	int tab[3][256] = {{0}};
+	char line[128];
+
+
+	if( fp == NULL)
+		exit(EXIT_FAILURE);
+
+	i=0;
+	while(fgets(line, 1000, fp) != NULL)
+	{
+		sscanf(line, "%d %d %d", &tab[0][i],&tab[1][i],&tab[2][i]);
+		i++;
+	}
+
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p = getPixel(bmp, i, j);
+			grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+
+			p.Red = tab[0][grey];
+			p.Green = tab[1][grey];
+			p.Blue = tab[2][grey];
+			setPixel(bmpTemp, i, j, p);
+		}
+	}
+	fclose(fp);
+
+	return bmpTemp;
+}
+
+	/*****************
+	 COLORISATION HSL
+	*****************/
+BMP* colorizeHSL(BMP* bmp)
+{
+	BMP* bmpTemp = copyBMP(bmp);
+	FILE* fp = fopen("./src/spring/colorHSL.txt", "r");
+	Pixel p;
+	HSL hsl;
+	int grey, i, j;
+	float tab[3][256] = {{0.0}};
+	char line[128];
+
+	if( fp == NULL)
+		exit(EXIT_FAILURE);
+
+		TEST;
+	i=0;
+	while(fgets(line, 1000, fp) != NULL)
+	{
+		sscanf(line, "%f %f %f", &tab[0][i],&tab[1][i],&tab[2][i]);
+		i++;
+	}
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p = getPixel(bmp, i, j);
+			hsl = RGB2HSL(p);
+			grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+
+			hsl.Hue = tab[0][grey];
+			hsl.Sat = tab[1][grey];
+			hsl.Light = tab[2][grey];
+			p = HSL2RGB(hsl);
+			setPixel(bmpTemp, i, j, p);
+		}
+	}
+	fclose(fp);
+
+	return bmpTemp;
 }
 
 
@@ -508,98 +584,113 @@ void histogram(BMP* bmp)
 
 }
 
-BMP* colorize(BMP* bmp)
-{
-	BMP* bmpTemp = copyBMP(bmp);
-	FILE* fp = fopen("test.txt", "r");
-	Pixel p, cp;
-	int grey, i, j;
-	int tab[3][256] = {{0}};
-	char line[1000] = "";
-
-	if( fp == NULL)
-		exit(EXIT_FAILURE);
-		
-	
-	while(fgets(line, 1000, fp) != NULL)	
-	{
-		printf("%s", line);
-		sscanf(line, "%d %d %d", &tab[0][i],&tab[1][i],&tab[2][i]);
-		printf("%d %d %d\n", tab[0][i],tab[1][i],tab[2][i]);
-		i++;
-		printf("%s\n", line);
-	}
-
-	for(i=0; i<bmp->width; i++)
-	{
-		for(j=0; j<bmp->height; j++)
-		{
-			p = getPixel(bmp, i, j);
-			grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
-
-			cp.Red = tab[0][grey];
-			cp.Green = tab[1][grey];
-			cp.Blue = tab[2][grey];
-			setPixel(bmpTemp, i, j, cp);
-		}
-	}
-	fclose(fp);
-
-	return bmpTemp;
-}
-
-int meanColorOfFolder(char* folderName)
+	/***************************************
+	 MOYENNE DES COULEUR SUR GROUPE D'IMAGE
+	***************************************/
+int meanColorOfFolder(int season, char* folderName)
 {
 	DIR *dir;
-	FILE* fp = fopen("fallColor.txt", "w+");
-	BMP* bmpTemp;
+	FILE *fpRGB, *fpHSL;
+	BMP *bmpTemp;
 	Pixel p;
-	int tab[3][256] = {{0}};
-	float tabPic[6][256] = {{0}};
+	HSL hsl;
+	int tab[6][256] = {{0}};		// R G B
+	float tab2[6][256] = {{0}};		// H S L
+	float tabPic[6][256] = {{0}};	// R G B nbR nbG nB
+	float tabPic2[6][256] = {{0}};	//  H S L nbH nbS nbL
 	int grey, i, j, nbIm=0;
 	struct dirent *ent;
+
+	if(season == 1)
+	{
+		fpRGB = fopen("./src/spring/colorRGB.txt", "w+");
+		fpHSL = fopen("./src/spring/colorHSL.txt", "w+");
+	}
+
+	else if(season == 2)
+	{
+		fpRGB = fopen("./src/summer/colorRGB.txt", "w+");
+		fpHSL = fopen("./src/summer/colorHSL.txt", "w+");
+	}
+	else if(season == 3)
+	{
+		fpRGB = fopen("./src/fall/colorRGB.txt", "w+");
+		fpHSL = fopen("./src/fall/colorHSL.txt", "w+");
+	}
+	else
+	{
+		fpRGB = fopen("./src/winter/colorRGB.txt", "w+");
+		fpHSL = fopen("./src/winter/colorHSL.txt", "w+");
+	}
 
 	if ((dir = opendir (folderName)) != NULL)
 	{
 		while ((ent = readdir (dir)) != NULL)
 		{
-			if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0)
+			if (strcmp(ent->d_name, ".") != 0 && strcmp(ent->d_name, "..") != 0  && strcmp(ent->d_name, "colorRGB.txt") != 0 && strcmp(ent->d_name, "colorHSL.txt")!= 0)
 			{
 				bmpTemp = loadBMP(concat(2, folderName, ent->d_name));
 				for(i=0; i<bmpTemp->width; i++)
 				{
 					for(j=0; j<bmpTemp->height; j++)
 					{
+
 						p = getPixel(bmpTemp, i, j);
+						hsl = RGB2HSL(p);
 						grey = p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+						// RGB
 						tabPic[0][grey] += p.Red;	tabPic[3][grey]++;
 						tabPic[1][grey] += p.Green;	tabPic[4][grey]++;
 						tabPic[2][grey] += p.Blue;	tabPic[5][grey]++;
+
+						// HSL
+						tabPic2[0][grey] += hsl.Hue;	tabPic2[3][grey]++;
+						tabPic2[1][grey] += hsl.Sat;	tabPic2[4][grey]++;
+						tabPic2[2][grey] += hsl.Light;	tabPic2[5][grey]++;
 					}
 				}
 				for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
 				{
 					if(tabPic[3][i] != 0)
-						tab[0][i] += tabPic[0][i] / (tabPic[3][i]);
+						tab[0][i] += tabPic[0][i] / tabPic[3][i];
 					else
 						tab[0][i] = 0;
-						
+
+					if(tabPic2[3][i] != 0)
+						tab2[0][i] += tabPic2[0][i] / tabPic2[3][i];
+					else
+						tab2[0][i] = 0;
+
 					if(tabPic[4][i] != 0)
-						tab[1][i] += tabPic[1][i] / (tabPic[4][i]);
+						tab[1][i] += tabPic[1][i] / tabPic[4][i];
 					else
 						tab[1][i] = 0;
-					
+
+					if(tabPic2[4][i] != 0)
+						tab2[1][i] += tabPic2[1][i] / tabPic2[4][i];
+					else
+						tab2[1][i] = 0;
+
 					if(tabPic[5][i] != 0)
-						tab[2][i] += tabPic[2][i] / (tabPic[5][i]);
+						tab[2][i] += tabPic[2][i] / tabPic[5][i];
 					else
 						tab[2][i] = 0;
+
+					if(tabPic2[5][i] != 0)
+						tab2[2][i] += tabPic2[2][i] / tabPic2[5][i];
+					else
+						tab2[2][i] = 0;
+
 				}
 				for(i=0; i<256; i++) // Remise a 0 du tableau propre a l'image en cours
 				{
 					for(j=0; j<6; j++)
+					{
 						tabPic[j][i] = 0;
+						tabPic2[j][i] = 0.0;
+					}
 				}
-				printf("image n: %d. ", ++nbIm);
+				printf("image n: %d.\n", ++nbIm);
 			}
 		}
 		closedir (dir);
@@ -615,44 +706,26 @@ int meanColorOfFolder(char* folderName)
 		tab[0][i] /= (1.0*nbIm);
 		tab[1][i] /= (1.0*nbIm);
 		tab[2][i] /= (1.0*nbIm);
-		fprintf(fp, "%d %d %d\n", tab[0][i], tab[1][i], tab[2][i]);
+
+		tab2[0][i] /= (1.0*nbIm);
+		tab2[1][i] /= (1.0*nbIm);
+		tab2[2][i] /= (1.0*nbIm);
+		fprintf(fpRGB, "%d %d %d\n", tab[0][i], tab[1][i], tab[2][i]);
+		fprintf(fpHSL, "%f %f %f\n", tab2[0][i], tab2[1][i], tab2[2][i]);
 	}
-	fclose(fp);
+	fclose(fpRGB);
+	fclose(fpHSL);
 
 	return 1;
 }
 
-char* concat(int count, ...)
-{
-    va_list ap;
-    int i;
-
-    int len = 1; // room for NULL
-    va_start(ap, count);
-    for(i=0 ; i<count ; i++)
-        len += strlen(va_arg(ap, char*));
-    va_end(ap);
-
-    char *merged = calloc(sizeof(char),len);
-    int null_pos = 0;
-
-    va_start(ap, count);
-    for(i=0 ; i<count ; i++)
-    {
-        char *s = va_arg(ap, char*);
-        strcpy(merged+null_pos, s);
-        null_pos += strlen(s);
-    }
-    va_end(ap);
-
-    return merged;
-}
 
 int main()
 {
 	char nameimage[200], buf[200];
 	int choice = 0, param=0, i=1;
 	BMP* image;
+	BMP* image2;
 
 	CLEAR;
 	printf("####################################\n");
@@ -675,8 +748,10 @@ int main()
 					CBLU"3."CRESET" Contrast\n  "
 					CBLU"4."CRESET" Saturation\n  "
 					CBLU"5."CRESET" Contours\n  "
-					CBLU"6."CRESET" Histogramme\n");
-					
+					CBLU"6."CRESET" Histogramme\n  "
+					CBLU"7."CRESET" Moyennage des couleurs\n  "
+					CBLU"8."CRESET" Colorisation\n");
+
 		scanf("%d", &choice);
 		switch(choice){
 			case 1:
@@ -707,11 +782,29 @@ int main()
 				histogram(image);
 			break;
 			case 7:
-				meanColorOfFolder("./src/fallPictures/");
+				printf("\n   Choisizzez la saison :\n1. Printemps\n2. Ete\n3. Automne\n4. Hiver\n");
+				scanf("%d", &choice);
+				switch(choice)
+				{
+					case 1:
+					meanColorOfFolder(1, "./src/spring/");
+					break;
+					case 2:
+					meanColorOfFolder(2, "./src/summer/");
+					break;
+					case 3:
+					meanColorOfFolder(3, "./src/fall/");
+					break;
+					case 4:
+					meanColorOfFolder(4, "./src/winter/");
+					break;
+				}
 			break;
 			case 8:
-				image = colorize(image);
-				saveBMP(image, "./Gallery/colorized.bmp");
+				image2 = colorizeHSL(image);
+				saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
+				image2 = colorizeRGB(image);
+				saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
 			break;
 		}
 		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);

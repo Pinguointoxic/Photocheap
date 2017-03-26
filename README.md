@@ -114,7 +114,7 @@ BMP* constrast(BMP* bmp, int contrast)
 ### Analyse
 - [x] Contour \(Sobel + Pewitt)
 - [x] Histogramme \(Rouge, Vert, Bleu, Gris)
-- [ ] Statistiques \(Portait ? Paysage ? ...)
+- [x] Couleur moyenne par teinte de gris
 
 #### Contour (Sobel + Pewitt)
 ```C
@@ -129,8 +129,12 @@ void histogram(BMP* bmp)
 ```
    Créer 4 images BMP et un fichier texte représentant les histogrammes d'une image. Un histogramme par canal de couleur (Rouge, Vert et Bleu) et un histogramme de la luminosité de l'image (Gris). Plus la densité de pixels est forte vers la valeur 255, plus l'image est sombre; réciproquement, si la densité est forte vers la valeur 0, l'image est claire.
    
-#### Statistiques
-
+#### Couleur moyenne
+```C
+int meanColorOfFolder(int saison, char* nomDuDossier)
+```
+   Créer deux fichiers txt (version RGB et HSL) de 256 lignes. Chacunes correspond a une nuance de gris (0->255), et a chaque nuance on y associe le triplet de couleur RGB (ou HSL) moyen lui correspondant.
+   
 ## License
 
 MIT License.

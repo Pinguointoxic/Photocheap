@@ -583,6 +583,44 @@ void histogram(BMP* bmp)
 	saveBMP(histoGrey, "histograms/histogram_Grey.bmp");
 
 }
+	/**********************************
+	 MOYENNE DES COULEUR SUR UNE IMAGE
+	**********************************/	
+BMP* recolorizeBMP(BMP* bmp)
+{
+	BMP* bmpTemp;
+	Pixel p;
+	HSL hsl;
+	int i, j, k;
+	int grey, nbTotal=0;
+	int tabNbRVB[256][256][256] =  {{{0}}};
+	int tab[3][256] = {{0}};
+	int finalTab[3][256] = {{0}};
+	
+	for(i=0; i<bmpTemp->width; i++)
+	{
+		for(j=0; j<bmpTemp->height; j++)
+		{
+			p = getPixel(bmpTemp, i, j);
+			tabNbRVB[p.Red][p.Green][p.Blue]++;
+			grey = greyIt(p, 1);
+			tab[0][grey] += p.Red;
+			tab[1][grey] += p.Green;
+			tab[2][grey] += p.Blue;
+			nbTotal++;
+		}
+	}
+	
+	for(i=0; i<256; i++)
+		for(j=0; j<256; j++)
+			for(k=0; k<256; k++)
+			{
+				
+			}
+				
+	
+	return bmpTemp;
+}
 
 	/***************************************
 	 MOYENNE DES COULEUR SUR GROUPE D'IMAGE
@@ -598,7 +636,8 @@ int meanColorOfFolder(int season, char* folderName)
 	float tab2[6][256] = {{0}};		// H S L
 	float tabPic[6][256] = {{0}};	// R G B nbR nbG nB
 	float tabPic2[6][256] = {{0}};	//  H S L nbH nbS nbL
-	int grey, i, j, nbIm=0;
+	int G[256] = {0};
+	int grey, i, j, nbIm=0, gris=0;
 	struct dirent *ent;
 
 	if(season == 1)
@@ -647,9 +686,10 @@ int meanColorOfFolder(int season, char* folderName)
 						tabPic2[0][grey] += hsl.Hue;	tabPic2[3][grey]++;
 						tabPic2[1][grey] += hsl.Sat;	tabPic2[4][grey]++;
 						tabPic2[2][grey] += hsl.Light;	tabPic2[5][grey]++;
+						G[grey]++;
 					}
 				}
-				for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
+				/*for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
 				{
 					if(tabPic[3][i] != 0)
 						tab[0][i] += tabPic[0][i] / tabPic[3][i];
@@ -681,7 +721,7 @@ int meanColorOfFolder(int season, char* folderName)
 					else
 						tab2[2][i] = 0;
 
-				}
+				}*/
 				for(i=0; i<256; i++) // Remise a 0 du tableau propre a l'image en cours
 				{
 					for(j=0; j<6; j++)
@@ -723,66 +763,68 @@ int meanColorOfFolder(int season, char* folderName)
 int main()
 {
 	char nameimage[200], buf[200];
-	int choice = 0, param=0, i=1;
+	int choice = 0, param = 0, i=1;
 	BMP* image;
 	BMP* image2;
+	BMP* image3;
 
 	CLEAR;
-	printf("####################################\n");
-	printf("#                                  #\n");
-	printf("#     Bonjour,                     #\n");
-	printf("#     Bienvenue sur Photocheap     #\n");
-	printf("#                                  #\n");
-	printf("####################################\n\n");
-	printf("   Nous pouvons vous proposer differentes modifications pour de plus belles images\n\n");
+	printLogo();
 
 	while(i){
 
-		printf("  Veuillez donnez le nom de votre image:\n");
+		printf("Veuillez donnez le nom de votre image:\n");
 		scanf("%s",nameimage);
 		image = loadBMP(nameimage);
 		printf("\n");
-		printf("  Veuillez choisir vos modification :\n \n");
-		printf("  " CBLU"1."CRESET" Niveau de gris\n  "
-					CBLU"2."CRESET" Negatif\n  "
-					CBLU"3."CRESET" Contrast\n  "
-					CBLU"4."CRESET" Saturation\n  "
-					CBLU"5."CRESET" Contours\n  "
-					CBLU"6."CRESET" Histogramme\n  "
-					CBLU"7."CRESET" Moyennage des couleurs\n  "
-					CBLU"8."CRESET" Colorisation\n");
+		printf("Veuillez choisir vos modification :\n \n");
+		printf(	"	" CBLU"1."CRESET" Niveau de gris\n"
+				"	" CBLU"2."CRESET" Negatif\n"
+				"	" CBLU"3."CRESET" Contraste\n"
+				"	" CBLU"4."CRESET" Saturation\n"
+				"	" CBLU"5."CRESET" Contours\n"
+				"	" CBLU"6."CRESET" Histogramme\n"
+				"	" CBLU"7."CRESET" Moyennage des couleurs\n"
+				"	" CBLU"8."CRESET" Colorisation par saison\n"
+				"	" CBLU"9."CRESET" Re-Colorisation\n");
 
 		scanf("%d", &choice);
 		switch(choice){
+			// NUANCES DE GRIS
 			case 1:
 				image = greyScale(image);
 				saveBMP(image, concat(2,"./Gallery/greyscale_", nameimage));
 			break;
+			// NEGATIF
 			case 2:
 				image = invert(image);
 				saveBMP(image, concat(2, "./Gallery/invert_", nameimage));
 			break;
+			// CONTRASTE - probleme
 			case 3:
-				printf("  Donnez la valeur des contraste que vous desirez: \n");
+				printf("Donnez la valeur des contraste que vous desirez: (-256 < valeur < 256)\n");
 				scanf("%d", &param);
-				image = contrast(image,param);
-				saveBMP(image, concat(4, "./Gallery/contraste(",sprintf(buf, "%d", param),")_", nameimage));
+				image = contrast(image, param);
+				saveBMP(image, concat(2, "./Gallery/contraste_", nameimage));
 			break;
+			// SATURATION -probleme
 			case 4:
-				printf("  Donnez la valeur de saturation que vous desirez: \n");
+				printf("Donnez la valeur de saturation que vous desirez: (-100 <= valeur <= 100\n");
 				scanf("%d", &param);
 				image = saturation(image, param);
-				saveBMP(image, concat(4, "./Gallery/saturation(", sprintf(buf, "%d", param), ")_", nameimage));
+				saveBMP(image, concat(2, "./Gallery/saturation_", nameimage));
 			break;
+			// CONTOUR
 			case 5:
 				image = pewitt(image);
 				saveBMP(image, "./Gallery/contour.bmp");
 			break;
+			// HISTOGRAMME - probleme
 			case 6:
 				histogram(image);
 			break;
 			case 7:
-				printf("\n   Choisizzez la saison :\n1. Printemps\n2. Ete\n3. Automne\n4. Hiver\n");
+				printf("\nChoisizzez la saison :\n1. Printemps\n2. Ete\n3. Automne\n4. Hiver\n");
 				scanf("%d", &choice);
 				switch(choice)
 				{
@@ -801,11 +843,16 @@ int main()
 				}
 			break;
 			case 8:
-				image2 = colorizeHSL(image);
+				printf("\n   Choisizzez la saison :\n1. Printemps\n2. Ete\n3. Automne\n4. Hiver\n");
+				scanf("%d", &choice);
+				image2 = colorizeHSL(image, choice);
 				saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
-				image2 = colorizeRGB(image);
+				image2 = colorizeRGB(image, choice);
 				saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
+				image3 = colorizeMix(image, choice);
+				saveBMP(image3, concat(2, "./Gallery/colorized_Mix_", nameimage));
 			break;
+				
 		}
 		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);
 		printf("  Voulez vous continuez a modifier vos images?\n");

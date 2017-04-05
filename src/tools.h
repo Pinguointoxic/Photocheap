@@ -32,6 +32,36 @@ char* concat(int count, ...)
 	**************/
 void printLogo()
 {
+	printf(
+		CBLU"pcpppcccpppcccpcpcpcpppcccpppcccpcpcpcpcp \n"
+		"ppcccppppcccpcpcpcppcpcpcccccppppccpcpcpc \n"
+		"ppcp                                 ppcc \n"
+		"ppcp                                 pcpc \n"
+		"pccp       ppcpcp                    pcpp \n"
+		"pcpc    pccpcpcpcpp                  ppcc \n"
+		"ppcc     pcp   ppcc   cppccpcpc      pccc \n"
+		"ccpp     pcc   pcpp  pcpcpppccc      pccp \n"
+		"cppp     pcpcpcccp  pccc             pccc \n"
+		"ppcc    ppcpc       pcpp             ccpp \n"
+		"ccpc     pppp       ppccp    ccp     ccpp \n"
+		"cpcp     ppc        ppccppcpcpc      pccc \n"
+		"cccc     cpc         pcpcppcc        pppp \n"
+		"pppp     pcp                         cpcp \n"
+		"cpcp                                 ccpp \n"
+		"ppcc"CRESET"      Bienvenue sur Photocheap" CBLU"   cpcp \n"
+		"pcpcpcpcpppcppcpcppcpcppcpcpcpppcppcpcppc \n"
+		"cppcpcccppcpcppcpcpcpcpcppcccppcppppcppcp \n" CRESET
+		"\n"
+		"\n"
+	);
 
+}
+
+float greyIt(Pixel p, int mode)
+{
+	if(mode == 0) // CIE
+		return p.Red*0.2125 + p.Green*0.7154 + p.Blue*0.0721;
+	else
+		return (p.Red+p.Blue+p.Green)/3;
 }
 

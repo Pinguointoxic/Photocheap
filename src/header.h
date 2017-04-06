@@ -99,9 +99,11 @@ BMP*	contrast	(BMP*, int);				// Change le contraste de l'image
 BMP*	saturation	(BMP*, int);				// Modifie la saturation des couleurs
 BMP*	sobel		(BMP*);						// Detection des contours par l'operateur de Sobel
 BMP*	pewitt		(BMP*);						// Detection des contours par l'operateur de Pewitt
-BMP* colorizeRGB  (BMP*);              // Colorise une image N&B via un tableau de valeur RGB
-BMP* colorizeHSL  (BMP*);              // Colorise une image N&B via un tableau de valeur HSL
-int meanColorOfFolder(int, char*);
+BMP*	colorizeRGB	(BMP*);						// Colorise une image N&B via un tableau de valeur RGB
+BMP*	colorizeHSL	(BMP*);						// Colorise une image N&B via un tableau de valeur HSL
+BMP*	colorizeMIX	(BMP*);						// Colorise une image N&B via un tableau de valeur RGB ET HSL
+int		meanColorBMPeme(BMP*);
+int		meanColorBMProb(BMP*);
 
 // OUTILS
 char* concat(int count, ...);

@@ -65,3 +65,10 @@ float greyIt(Pixel p, int mode)
 		return (p.Red+p.Blue+p.Green)/3;
 }
 
+char* toString(int a)
+{
+	char* str = malloc(sizeof(int));
+	sprintf(str, "%d", a);
+	return str;
+	free(str);
+}

@@ -78,23 +78,24 @@ void histogram(BMP* bmp)
 	saveBMP(histoGrey, "./Histograms/histogram_Grey.bmp");
 
 }
-	/**********************************
-	 MOYENNE DES COULEUR SUR UNE IMAGE
-	**********************************/	
+	/******************************************************
+	 MOYENNE DES COULEURS PAR NIVEAU DE GRIS SUR UNE IMAGE
+	******************************************************/
 int meanColorBMProb(BMP* bmp)
 {
 	BMP* bmpTemp = copyBMP(bmp);
 	FILE* fp = fopen("color.txt", "w+");
 	Pixel p;
 	HSL hsl;
-	int i, j, k;
+	int i, j, k, l, m, n;
 	int grey, nbTotal=0;
 
 	int		tabRGB[6][256] = {{0}};			// R V B nbR nbG nbB
 	float	tabHSL[6][256] = {{0.0}};		// H S L nbH nbS nbL
 	int		_tabRGB[3][256] = {{0}};		// valeurs moyennes de RGB
 	float	_tabHSL[3][256] = {{0.0}};		// valeurs moyennes de HSL
-	
+
+
 	for(i=0; i<bmpTemp->width; i++)
 	{
 		for(j=0; j<bmpTemp->height; j++)
@@ -102,37 +103,37 @@ int meanColorBMProb(BMP* bmp)
 			p = getPixel(bmpTemp, i, j);
 			hsl = RGB2HSL(p);
 			grey = greyIt(p, 1);
-			
+
 			tabRGB[0][grey] += p.Red;		tabRGB[3][grey]++;
 			tabRGB[1][grey] += p.Green;		tabRGB[4][grey]++;
 			tabRGB[2][grey] += p.Blue;		tabRGB[5][grey]++;
-			
+
 			tabHSL[0][grey] += hsl.Hue;		tabHSL[3][grey]++;
 			tabHSL[1][grey] += hsl.Sat;		tabHSL[4][grey]++;
 			tabHSL[2][grey] += hsl.Light;	tabHSL[5][grey]++;
 		}
 	}
-	
+
 	for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
 	{
 		(tabRGB[3][i] != 0) ? (_tabRGB[0][i] = tabRGB[0][i] / tabRGB[3][i]) : (_tabRGB[0][i] = 0);
 		(tabRGB[4][i] != 0) ? (_tabRGB[1][i] = tabRGB[1][i] / tabRGB[4][i]) : (_tabRGB[1][i] = 0);
 		(tabRGB[5][i] != 0) ? (_tabRGB[2][i] = tabRGB[2][i] / tabRGB[5][i]) : (_tabRGB[2][i] = 0);
-		
+
 		(tabHSL[3][i] != 0.0) ? (_tabHSL[0][i] = tabHSL[0][i] / tabHSL[3][i]) : (_tabHSL[0][i] = 0.0);
 		(tabHSL[4][i] != 0.0) ? (_tabHSL[1][i] = tabHSL[1][i] / tabHSL[4][i]) : (_tabHSL[1][i] = 0.0);
 		(tabHSL[5][i] != 0.0) ? (_tabHSL[2][i] = tabHSL[2][i] / tabHSL[5][i]) : (_tabHSL[2][i] = 0.0);
-			
+
 		fprintf(fp, "%d %d %d %f %f %f\n", _tabRGB[0][i], _tabRGB[1][i], _tabRGB[2][i], _tabHSL[0][i], _tabHSL[1][i], _tabHSL[2][i]);
 	}
-	fclose(fp);	
-	
+	fclose(fp);
+
 	return 1;
 }
 
-	/**********************************
-	 MOYENNE DES COULEUR SUR UNE IMAGE
-	**********************************/	
+	/******************************************************
+	 MOYENNE DES COULEURS PAR NIVEAU DE GRIS SUR UNE IMAGE
+	******************************************************/
 int meanColorBMPeme(BMP* bmp)
 {
 	FILE *fp;
@@ -215,4 +216,30 @@ int meanColorBMPeme(BMP* bmp)
 	}
 	fclose(fp);
 	return 1;
+}
+
+
+float meanPixel(BMP* bmp)
+{
+	Pixel p;
+	int i, j, n=0;
+	float tab[3] = {0.0};
+
+	for(i=0; i<bmp->width; i++)
+	{
+		for(j=0; j<bmp->height; j++)
+		{
+			p = getPixel(bmp, i, j);
+			tab[0] += p.Red;
+			tab[1] += p.Green;
+			tab[2] += p.Blue;
+			n++;
+		}
+	}
+
+	tab[0] = (tab[0] /= n);
+	tab[1] = (tab[1] /= n);
+	tab[3] = (tab[2] /= n);
+
+	return (tab[0] + tab[1] + tab[3])/3.0;
 }

@@ -104,6 +104,7 @@ BMP*	colorizeHSL	(BMP*);						// Colorise une image N&B via un tableau de valeur
 BMP*	colorizeMIX	(BMP*);						// Colorise une image N&B via un tableau de valeur RGB ET HSL
 int		meanColorBMPeme(BMP*);
 int		meanColorBMProb(BMP*);
+float meanPixel(BMP*);
 
 // OUTILS
 char* concat(int count, ...);

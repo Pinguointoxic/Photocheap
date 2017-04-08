@@ -34,7 +34,7 @@ int main()
 
 		printf("Veuillez donnez le nom de votre image:\n");
 		scanf("%s",nameimage);
-		image = loadBMP(nameimage);
+		image = loadBMP(concat(2, "./img/", nameimage));
 		printf("\n");
 		printf("Veuillez choisir vos modification :\n \n");
 		printf(	"	" CBLU"1."CRESET" Niveau de gris\n"
@@ -58,14 +58,14 @@ int main()
 				image = invert(image);
 				saveBMP(image, concat(2, "./Gallery/invert_", nameimage));
 			break;
-			// CONTRASTE - probleme
+			// CONTRASTE
 			case 3:
 				printf("Donnez la valeur des contraste que vous desirez: (-256 < valeur < 256)\n");
 				scanf("%d", &param);
 				image = contrast(image, param);
 				saveBMP(image, concat(2, "./Gallery/contraste_", nameimage));
 			break;
-			// SATURATION -probleme
+			// SATURATION
 			case 4:
 				printf("Donnez la valeur de saturation que vous desirez: (-100 <= valeur <= 100\n");
 				scanf("%d", &param);
@@ -77,7 +77,7 @@ int main()
 				image = pewitt(image);
 				saveBMP(image, "./Gallery/contour.bmp");
 			break;
-			// HISTOGRAMME - probleme
+			// HISTOGRAMME
 			case 6:
 				histogram(image);
 			break;
@@ -92,14 +92,14 @@ int main()
 			break;
 			case 8:
 				meanColorBMProb(image);
-				image2 = colorizeHSL(image);
-				saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
-				image2 = colorizeRGB(image);
-				saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
+				//image2 = colorizeHSL(image);
+				//saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
+				//image2 = colorizeRGB(image);
+				//saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
 				image3 = colorizeMIX(image);
-				saveBMP(image3, concat(2, "./Gallery/colorized_MIX_", nameimage));
+				//saveBMP(image3, concat(2, "./Gallery/colorized_MIX_", nameimage));
 			break;
-				
+
 		}
 		printf(CGRN "  Vos modification on bien ete effectue \n" CRESET);
 		printf("  Voulez vous continuez a modifier vos images?\n");

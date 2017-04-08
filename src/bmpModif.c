@@ -284,13 +284,11 @@ BMP* colorizeHSL(BMP* bmp)
 
 BMP* colorizeMIX(BMP* bmp)
 {
-	int borneHSL = 0;
-	int borneRGB = 0;
+	int borne = 0;
 
 	BMP* bmpTemp = copyBMP(bmp);
 	FILE* fp = fopen("color.txt", "r");
 	FILE* fpix = fopen("meanpix.csv", "w+");
-		fprintf(fpix, "HSL RGB MOY\n");
 	Pixel p, cp1, cp2;
 	Pixel pdelta;
 	HSL hsl;
@@ -298,9 +296,10 @@ BMP* colorizeMIX(BMP* bmp)
 	int tabRGB[3][256] = {{0}};
 	float tabHSL[3][256] = {{0.0}};
 
-	float tab[256][256] = {{256.0}};
+	float tab[256][256] = {{0.0}};
+	float tab2[256] = {0.0};
 	float small = 300.0;
-	int smallCoord[2];
+	int smallCoord;
 	char line[128];
 
 
@@ -314,78 +313,51 @@ BMP* colorizeMIX(BMP* bmp)
 		i++;
 	}
 
-	for(borneHSL=0; borneHSL<256; borneHSL+=15)
+	for(borne = 0; borne<256; borne++)
 	{
-		for(borneRGB=0; borneRGB<256; borneRGB+=15)
+		for(i=0; i<bmp->width; i++)
 		{
-			for(i=0; i<bmp->width; i++)
+			for(j=0; j<bmp->height; j++)
 			{
-				for(j=0; j<bmp->height; j++)
+				p = getPixel(bmp, i, j);
+				hsl = RGB2HSL(p);
+				grey = greyIt(p, 1);
+
+				if(grey <= borne)
 				{
-					p = getPixel(bmp, i, j);
-					hsl = RGB2HSL(p);
-					grey = greyIt(p, 1);
-
-					if(grey <= borneHSL)
-					{
-						hsl.Hue = tabHSL[0][grey];
-						hsl.Sat = tabHSL[1][grey];
-						hsl.Light = tabHSL[2][grey];
-						cp1 = HSL2RGB(hsl);
-
-						//setPixel(bmpTemp, i, j, cp1);
-					}
-					else if(grey >= borneRGB)
-					{
-						cp1.Red = tabRGB[0][grey];
-						cp1.Green = tabRGB[1][grey];
-						cp1.Blue = tabRGB[2][grey];
-
-						//setPixel(bmpTemp, i, j, cp1);
-					}
-					else
-					{
-						hsl.Hue = tabHSL[0][grey];
-						hsl.Sat = tabHSL[1][grey];
-						hsl.Light = tabHSL[2][grey];
-						cp1 = HSL2RGB(hsl);
-
-						cp2.Red = tabRGB[0][grey];
-						cp2.Green = tabRGB[1][grey];
-						cp2.Blue = tabRGB[2][grey];
-
-						cp1.Red = (cp1.Red + cp2.Red)/2;
-						cp1.Green = (cp1.Green + cp2.Green)/2;
-						cp1.Blue = (cp1.Blue + cp2.Green)/2;
-
-						//setPixel(bmpTemp, i, j, cp1);
-					}
-
-					pdelta.Red = abs(p.Red - cp1.Red);
-					pdelta.Green = abs(p.Green - cp1.Green);
-					pdelta.Blue = abs(p.Blue - cp1.Blue);
-					setPixel(bmpTemp, i, j, pdelta);
+					hsl.Hue = tabHSL[0][grey];
+					hsl.Sat = tabHSL[1][grey];
+					hsl.Light = tabHSL[2][grey];
+					cp1 = HSL2RGB(hsl);
 				}
-			}
-			//saveBMP(bmpTemp, concat(5, "./Gallery/", toString(borneHSL),"_", toString(borneRGB), ".bmp"));
-			//fprintf(fpix, "%d; %d; %f;\n", borneHSL, borneRGB, meanPixel(bmpTemp));
-			tab[borneHSL][borneRGB] = meanPixel(bmpTemp);
-		}
-	}
+				else
+				{
+					cp1.Red = tabRGB[0][grey];
+					cp1.Green = tabRGB[1][grey];
+					cp1.Blue = tabRGB[2][grey];
+				}
 
-	for(i=0; i<256; i+=15)
-	{
-		for(j=0; j<256; j+=15)
-		{
-			if(tab[i][j] <= small)
-			{
-				small = tab[i][j];
-				smallCoord[0] = i;
-				smallCoord[1] = j;
+				pdelta.Red = abs(p.Red - cp1.Red);
+				pdelta.Green = abs(p.Green - cp1.Green);
+				pdelta.Blue = abs(p.Blue - cp1.Blue);
+				setPixel(bmpTemp, i, j, pdelta);
 			}
 		}
+		//saveBMP(bmpTemp, concat(5, "./Gallery/", toString(borneHSL),"_", toString(borneRGB), ".bmp"));
+		fprintf(fpix, "%d; %f;\n", borne, meanPixel(bmpTemp));
+		tab2[borne] = meanPixel(bmpTemp);
 	}
-	printf("%d %d", smallCoord[0], smallCoord[1]);
+	fclose(fpix);
+
+	for(i=0; i<256; i++)
+	{
+		if(tab2[i] <= small)
+		{
+			small = tab2[i];
+			smallCoord = i;
+		}
+	}
+	printf("%d", smallCoord);
 
 	for(i=0; i<bmp->width; i++)
 	{
@@ -395,46 +367,27 @@ BMP* colorizeMIX(BMP* bmp)
 			hsl = RGB2HSL(p);
 			grey = greyIt(p, 1);
 
-			if(grey <= smallCoord[0])
+			if(grey <= smallCoord)
 			{
 				hsl.Hue = tabHSL[0][grey];
 				hsl.Sat = tabHSL[1][grey];
 				hsl.Light = tabHSL[2][grey];
-				cp1 = HSL2RGB(hsl);
+				p = HSL2RGB(hsl);
 
-				setPixel(bmpTemp, i, j, cp1);
-			}
-			else if(grey >= smallCoord[1])
-			{
-				cp1.Red = tabRGB[0][grey];
-				cp1.Green = tabRGB[1][grey];
-				cp1.Blue = tabRGB[2][grey];
-
-				setPixel(bmpTemp, i, j, cp1);
+				setPixel(bmpTemp, i, j, p);
 			}
 			else
 			{
-				hsl.Hue = tabHSL[0][grey];
-				hsl.Sat = tabHSL[1][grey];
-				hsl.Light = tabHSL[2][grey];
-				cp1 = HSL2RGB(hsl);
+				p.Red = tabRGB[0][grey];
+				p.Green = tabRGB[1][grey];
+				p.Blue = tabRGB[2][grey];
 
-				cp2.Red = tabRGB[0][grey];
-				cp2.Green = tabRGB[1][grey];
-				cp2.Blue = tabRGB[2][grey];
-
-				cp1.Red = (cp1.Red + cp2.Red)/2;
-				cp1.Green = (cp1.Green + cp2.Green)/2;
-				cp1.Blue = (cp1.Blue + cp2.Green)/2;
-
-				setPixel(bmpTemp, i, j, cp1);
+				setPixel(bmpTemp, i, j, p);
 			}
 		}
 	}
-	saveBMP(bmpTemp, concat(5, "./Gallery/", toString(smallCoord[0]),"_", toString(smallCoord[1]), ".bmp"));
-
+	saveBMP(bmpTemp, concat(3, "./Gallery/", toString(smallCoord), ".bmp"));
 	fclose(fp);
-	fclose(fpix);
 
 	return bmpTemp;
 }

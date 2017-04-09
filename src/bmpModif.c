@@ -288,7 +288,7 @@ BMP* colorizeMIX(BMP* bmp)
 
 	BMP* bmpTemp = copyBMP(bmp);
 	FILE* fp = fopen("color.txt", "r");
-	FILE* fpix = fopen("meanpix.csv", "w+");
+	//FILE* fpix = fopen("meanpix.csv", "w+");
 	Pixel p, cp1, cp2;
 	Pixel pdelta;
 	HSL hsl;
@@ -323,7 +323,7 @@ BMP* colorizeMIX(BMP* bmp)
 				hsl = RGB2HSL(p);
 				grey = greyIt(p, 1);
 
-				if(grey <= borne)
+				if(grey >= borne)
 				{
 					hsl.Hue = tabHSL[0][grey];
 					hsl.Sat = tabHSL[1][grey];
@@ -344,10 +344,10 @@ BMP* colorizeMIX(BMP* bmp)
 			}
 		}
 		//saveBMP(bmpTemp, concat(5, "./Gallery/", toString(borneHSL),"_", toString(borneRGB), ".bmp"));
-		fprintf(fpix, "%d; %f;\n", borne, meanPixel(bmpTemp));
+		//fprintf(fpix, "%d; %f;\n", borne, meanPixel(bmpTemp));
 		tab2[borne] = meanPixel(bmpTemp);
 	}
-	fclose(fpix);
+	//fclose(fpix);
 
 	for(i=0; i<256; i++)
 	{
@@ -367,7 +367,7 @@ BMP* colorizeMIX(BMP* bmp)
 			hsl = RGB2HSL(p);
 			grey = greyIt(p, 1);
 
-			if(grey <= smallCoord)
+			if(grey >= smallCoord)
 			{
 				hsl.Hue = tabHSL[0][grey];
 				hsl.Sat = tabHSL[1][grey];

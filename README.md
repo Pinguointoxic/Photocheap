@@ -147,11 +147,11 @@ void histogram(BMP* bmp)
 int meanColorBMP(BMP* bmp)
 ```
   Créer un fichier texte de 6 colones et 256 lignes.
-  GRIS |  RED | GREEN | BLUE | HUE | SATURATION | LIGHT
---- | --- | --- | --- | --- | --- | ---
-0 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité 
-... | ... | ... | ... | ... | ... | ...
-255 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité
+| GRIS |  RED | GREEN | BLUE | HUE | SATURATION | LIGHT |
+| --- | --- | --- | --- | --- | --- | --- |
+| 0 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité |
+| ... | ... | ... | ... | ... | ... | ... |
+| 255 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité |
 
 #### Couleur moyenne d'une image
 ```C

@@ -12,13 +12,19 @@ Photocheap est une logiciel en C ayant pour but d'effectuer des traitements et d
 
 ## Utilisation
 
-A FAIRE
+- Lancer l'executable ./pc
+- Entrez le nom de l'image (si elle n'existe pas, le logiciel se ferme)
+- Choisez la transformation a effectuer (chiffre de 1 a 8)
+- Attendre, certaines opérations peuvent être longues
+- Choisir si on veut continuer : 1 ou 0.
 
 ## Fonctions
 ### Manipulation
 - [x] Créer une image BMP
 - [x] Charger une image BMP
 - [x] Sauvegarder une image BMP
+- [X] Copier une image BMP
+
 - [x] Récupérer les valeurs d'un pixel
 - [x] Définir un pixel avec certaines valeurs
 - [x] RGB2HSL
@@ -80,8 +86,8 @@ Pixel HSL2RGB(HSL hsl)
 - [x] Nuance de gris
 - [x] Negatif
 - [x] Saturation
-- [x] Contrastes
-- [x] Colorisé une image noir et blanc
+- [x] Contrastes (Sobel ou Pewitt)
+- [x] Colorisé une image noir et blanc (mode RGB, mode HSL, mode Mix);
 
 #### Nuance de gris
 ```C
@@ -113,6 +119,7 @@ BMP* constrast(BMP* bmp, int contrast)
 ```C
 BMP* colorizeRGB(BMP* bmp)
 BMP* colorizeHSL(BMP* bmp)
+BMP* colorizeMIX(BMP* bmp)
 ```
    Colorise une image en nuance de gris grace a un tableau regroupant le triplet moyen (RGB ou HSL) pour chaque valeur de gris. Le tableau est basé sur une analyse via la fonction ```C meanColorOfFolder()``` sur un dossier contenant plusieur image d'un même theme.
 
@@ -120,6 +127,7 @@ BMP* colorizeHSL(BMP* bmp)
 - [x] Contour \(Sobel + Pewitt)
 - [x] Histogramme \(Rouge, Vert, Bleu, Gris)
 - [x] Couleur moyenne par teinte de gris
+- [x] Couleur moyenne d'une image
 
 #### Contour (Sobel + Pewitt)
 ```C
@@ -134,11 +142,46 @@ void histogram(BMP* bmp)
 ```
    Créer 4 images BMP et un fichier texte représentant les histogrammes d'une image. Un histogramme par canal de couleur (Rouge, Vert et Bleu) et un histogramme de la luminosité de l'image (Gris). Plus la densité de pixels est forte vers la valeur 255, plus l'image est sombre; réciproquement, si la densité est forte vers la valeur 0, l'image est claire.
    
-#### Couleur moyenne
+#### Couleur moyenne par teinte de gris
 ```C
-int meanColorOfFolder(int saison, char* nomDuDossier)
+int meanColorBMP(BMP* bmp)
 ```
-   Créer deux fichiers txt (version RGB et HSL) de 256 lignes. Chacunes correspond a une nuance de gris (0->255), et a chaque nuance on y associe le triplet de couleur RGB (ou HSL) moyen lui correspondant. On analyse plusieurs images d'un même thème, dans un dossier (nomDuDossier) pour avoir une moyenne la plus réaliste possible. 
+   Créer un fichier texte de 6 colones et 256 lignes.
+|GREY | RED | GREEN | BLUE | HUE | SATURATION | LIGHT |
+--- | --- | --- | --- | --- | --- | ---
+0 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité 
+... | ... | ... | ... | ... | ... | ... | 
+255 | moy rouge | moy vert | moy bleu | moy teinte | moy saturation | moy luminosité
+
+#### Couleur moyenne d'une image
+```C
+float meanPixel(BMP* bmp)
+```
+	Renvoi la couleur moyenne d'une image, la moyenne des valeurs de tous les pixels.
+
+### Outils
+#### Concatenation de chaine
+```C
+char* concat(int count, ...)
+```
+	Fusionne 'count' chaine de caractères.
+exemple :	concat(2, "Bonjour ", "toto")
+			concat(3, mot1, "_", mot2)
+			...
+			
+#### Nuance de gris
+```C
+float greyIt(Pixel p, int mode)
+```
+	Renvoi la nuance de gris associé a un triplet RGB.
+mode = 0 -> formule du C.I.E
+mode = 1 -> moyenne du triplet RGB
+
+#### Entier vers Chaine
+```C
+char* toString(int a)
+```
+	Transforme un entier en chaine de caractères.
    
 ## License
 

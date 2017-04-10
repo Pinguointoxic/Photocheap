@@ -121,7 +121,7 @@ BMP* colorizeRGB(BMP* bmp)
 BMP* colorizeHSL(BMP* bmp)
 BMP* colorizeMIX(BMP* bmp)
 ```
-   Colorise une image en nuance de gris grace a un tableau regroupant le triplet moyen (RGB ou HSL) pour chaque valeur de gris. Le tableau est basé sur une analyse via la fonction ```C meanColorOfFolder()``` sur un dossier contenant plusieur image d'un même theme.
+   Colorise une image en nuance de gris grace a un tableau regroupant le triplet moyen (RGB ou HSL) pour chaque valeur de gris. Le tableau est basé sur une analyse via la fonction ```C meanColorBMP()``` sur un dossier contenant plusieur image d'un même theme.
 
 ### Analyse
 - [x] Contour \(Sobel + Pewitt)
@@ -157,23 +157,23 @@ int meanColorBMP(BMP* bmp)
 ```C
 float meanPixel(BMP* bmp)
 ```
-	Renvoi la couleur moyenne d'une image, la moyenne des valeurs de tous les pixels.
+   Renvoi la couleur moyenne d'une image, la moyenne des valeurs de tous les pixels.
 
 ### Outils
 #### Concatenation de chaine
 ```C
 char* concat(int count, ...)
 ```
-	Fusionne 'count' chaine de caractères.
-exemple :	concat(2, "Bonjour ", "toto")
-			concat(3, mot1, "_", mot2)
-			...
+   Fusionne 'count' chaine de caractères.
+exemple : concat(2, "Bonjour ", "toto")
+          concat(3, mot1, "_", mot2)
+          ...
 			
 #### Nuance de gris
 ```C
 float greyIt(Pixel p, int mode)
 ```
-	Renvoi la nuance de gris associé a un triplet RGB.
+   Renvoi la nuance de gris associé a un triplet RGB.
 mode = 0 -> formule du C.I.E
 mode = 1 -> moyenne du triplet RGB
 
@@ -181,7 +181,7 @@ mode = 1 -> moyenne du triplet RGB
 ```C
 char* toString(int a)
 ```
-	Transforme un entier en chaine de caractères.
+   Transforme un entier en chaine de caractères.
    
 ## License
 

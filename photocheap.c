@@ -21,11 +21,11 @@ MIT licence
 
 int main()
 {
-	char nameimage[200], buf[200];
-	int choice = 0, param = 0, i=1;
-	BMP* image;
-	BMP* image2;
-	BMP* image3;
+	char	nameimage[200], buf[200];
+	int		choice = 0, param = 0, i=1;
+	BMP*	image;
+	BMP*	image2;
+	BMP*	image3;
 
 	CLEAR;
 	printLogo();
@@ -81,23 +81,10 @@ int main()
 			case 6:
 				histogram(image);
 			break;
+			// RECOLORISATION
 			case 7:
-				meanColorBMPeme(image);
-				/*image2 = colorizeHSL(image);
-				saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
-				image2 = colorizeRGB(image);
-				saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
+				meanColorBMProb(image);		// a mettre en commentaire si on souhaite (lors d'un deuxieme passage) colorisé une image a partir des infos d'une autre
 				image3 = colorizeMIX(image);
-				saveBMP(image3, concat(2, "./Gallery/colorized_MIX_", nameimage));*/
-			break;
-			case 8:
-				meanColorBMProb(image);
-				//image2 = colorizeHSL(image);
-				//saveBMP(image2, concat(2, "./Gallery/colorized_HSL_", nameimage));
-				//image2 = colorizeRGB(image);
-				//saveBMP(image2, concat(2, "./Gallery/colorized_RGB_", nameimage));
-				image3 = colorizeMIX(image);
-				//saveBMP(image3, concat(2, "./Gallery/colorized_MIX_", nameimage));
 			break;
 
 		}

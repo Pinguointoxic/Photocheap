@@ -134,6 +134,8 @@ int meanColorBMProb(BMP* bmp)
 	/******************************************************
 	 MOYENNE DES COULEURS PAR NIVEAU DE GRIS SUR UNE IMAGE
 	******************************************************/
+/*
+ESSAI DE MOYENNE PONDEREE -> Il nous fallait un tableau de 256⁴ cases, trop gros pour l'ordinateur...
 int meanColorBMPeme(BMP* bmp)
 {
 	FILE *fp;
@@ -169,7 +171,7 @@ int meanColorBMPeme(BMP* bmp)
 			G[grey]++;
 		}
 	}
-	/*for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
+	for(i=0; i<256; i++) // Remplissage du tableau avec la couleur "moyenne" de chaque valeur de gris de l'image en cours
 	{
 		if(tabPic[3][i] != 0)
 			tab[0][i] += tabPic[0][i] / tabPic[3][i];
@@ -201,29 +203,31 @@ int meanColorBMPeme(BMP* bmp)
 		else
 			tab2[2][i] = 0;
 
-	}*/
+	}
 
 	for(i=0; i<256; i++) // Moyenne finale des couleurs par le nombre d'image totale anlyser
 	{
-		/*tab[0][i] /= (1.0*nbIm);
+		tab[0][i] /= (1.0*nbIm);
 		tab[1][i] /= (1.0*nbIm);
 		tab[2][i] /= (1.0*nbIm);
 
 		tab2[0][i] /= (1.0*nbIm);
 		tab2[1][i] /= (1.0*nbIm);
-		tab2[2][i] /= (1.0*nbIm);*/
+		tab2[2][i] /= (1.0*nbIm);
 		fprintf(fp, "%d %d %d %f %f %f\n", tab[0][i], tab[1][i], tab[2][i], tab2[0][i], tab2[1][i], tab2[2][i]);
 	}
 	fclose(fp);
 	return 1;
 }
 
+*/
+
 
 float meanPixel(BMP* bmp)
 {
-	Pixel p;
-	int i, j, n=0;
-	float tab[3] = {0.0};
+	Pixel	p;
+	int		i, j, n=0;
+	float	tab[3] = {0.0};
 
 	for(i=0; i<bmp->width; i++)
 	{

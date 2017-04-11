@@ -102,10 +102,13 @@ BMP*	pewitt		(BMP*);						// Detection des contours par l'operateur de Pewitt
 BMP*	colorizeRGB	(BMP*);						// Colorise une image N&B via un tableau de valeur RGB
 BMP*	colorizeHSL	(BMP*);						// Colorise une image N&B via un tableau de valeur HSL
 BMP*	colorizeMIX	(BMP*);						// Colorise une image N&B via un tableau de valeur RGB ET HSL
-int		meanColorBMPeme(BMP*);
-int		meanColorBMProb(BMP*);
-float meanPixel(BMP*);
+//int		meanColorBMPeme(BMP*);
+int		meanColorBMProb(BMP*);					// Obtention des triplets RG et HSL moyens pour chaque valeurs de gris
+float	meanPixel	(BMP*);						// Renvoi un flotant de la couleur moyenne d'une image (R+V+B)/3
 
 // OUTILS
-char* concat(int count, ...);
+char*	concat(int count, ...);
+void	printLogo();							// Afficher le logo de Photocheap
+float	greyIt(Pixel, int);						// Retourne la valeur de gris associer a un triplet RGB
+char*	toString(int);							// Transforme un entier en chaine de caractere
 

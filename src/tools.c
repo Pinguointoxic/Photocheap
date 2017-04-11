@@ -1,7 +1,7 @@
 	/**************
 	 CONCATENATION
 	**************/
-char* concat(int count, ...)
+char* concat(int count, ...) // Conctenaer deux x chaines de caractères. ex: concat(2, "bonjour", "toto");	concat(4, "a","b","c","d");
 {
     va_list ap;
     int i;

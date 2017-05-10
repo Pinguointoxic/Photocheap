@@ -1,6 +1,7 @@
 /*********************************
 Robin Dell et Emeline Ehles
-MIT licence
+
+https://github.com/Rodd8/Photocheap
 *********************************/
 
 #include <stdio.h>

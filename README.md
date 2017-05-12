@@ -12,6 +12,7 @@ Photocheap est une logiciel en C ayant pour but d'effectuer des traitements et d
 
 ## Utilisation
 
+- gcc -o pc photocheap.c -lm
 - Lancer l'executable ./pc
 - Entrez le nom de l'image (si elle n'existe pas, le logiciel se ferme)
 - Choisez la transformation a effectuer (chiffre de 1 a 8)

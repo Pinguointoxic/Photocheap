@@ -53,6 +53,7 @@ BMP* invert(BMP* bmp)
  	*********/
 BMP* contrast(BMP* bmp, int cont)
 {
+	printf("\n%d\n", (int)10.000);
 	BMP* bmpTemp = copyBMP(bmp);
 	int i, j;
 	Pixel p, cp;
@@ -64,14 +65,24 @@ BMP* contrast(BMP* bmp, int cont)
 		for(j=0; j<bmp->height; j++)
 		{
 			p 			= getPixel(bmpTemp, i, j);
-			cp.Red 		= trunc( f * (p.Red - 128) + 128 );
-			cp.Green 	= trunc( f * (p.Green - 128) + 128 );
-			cp.Blue 	= trunc( f * (p.Blue - 128) + 128 );
+			cp.Red 		= truncate( f * (p.Red - 128) + 128 );
+			cp.Green 	= truncate( f * (p.Green - 128) + 128 );
+			cp.Blue 	= truncate( f * (p.Blue - 128) + 128 );
 			setPixel(bmpTemp, i, j, cp);
 		}
 	}
 
 	return bmpTemp;
+}
+
+unsigned char truncate(float f)
+{
+	if(f> 255.0)
+		return 255;
+	else if(f<0)
+		return 0;
+	else
+		return (unsigned char)(f/1);
 }
 
  	/***********
@@ -110,7 +121,7 @@ BMP* saturation(BMP* bmp, int sat)
 	*****************/
 BMP* sobel(BMP* bmp)
 {
-	BMP*	bmpTemp = greyscale(copyBMP(bmp));
+	BMP*	bmpTemp = greyScale(copyBMP(bmp));
 	BMP*	border = newBMP(bmp->width, bmp->height);
 	Pixel	p;
 	int		sobel_x[3][3] = {{-1,0,1},{-2,0,2},{-1,0,1}};
@@ -153,7 +164,7 @@ BMP* sobel(BMP* bmp)
 	*******************/
 BMP* pewitt(BMP* bmp)
 {
-	BMP*	bmpTemp = greyscale(copyBMP(bmp));
+	BMP*	bmpTemp = greyScale(copyBMP(bmp));
 	BMP*	border = newBMP(bmp->width, bmp->height);
 	Pixel	p;
 	int		pewitt_x[3][3] = {{-1,0,1},{-1,0,1},{-1,0,1}};
@@ -341,7 +352,7 @@ BMP* colorizeMIX(BMP* bmp)
 				setPixel(bmpDelta, i, j, pdelta);
 			}
 	
-			//saveBMP(bmpDelta, "./Gallery/delta.bmp"); // enregistre l'image 'delta' pour chaque borne/pivot.
+			saveBMP(bmpDelta, concat(3, "./Gallery/delta/delta_", toString(borne),".bmp")); // enregistre l'image 'delta' pour chaque borne/pivot.
 		}
 		tab2[borne] = meanPixel(bmpTemp); // pour chaque bornes, on stock dans tab2 la couleur moyenne de l'image en cours (R+V+B)/3
 	}

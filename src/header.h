@@ -111,4 +111,4 @@ char*	concat(int count, ...);
 void	printLogo();							// Afficher le logo de Photocheap
 float	greyIt(Pixel, int);						// Retourne la valeur de gris associer a un triplet RGB
 char*	toString(int);							// Transforme un entier en chaine de caractere
-
+unsigned char truncate(float);							// réduit a une valeur dans les bornes 0 a 255

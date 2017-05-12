@@ -11,13 +11,13 @@ https://github.com/Rodd8/Photocheap
 #include <math.h>
 #include <stdarg.h>
 
-#pragma pack(1)			// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
+#pragma pack(1)					// "Compresse" la structure en mémoire, utile pour avoir la VRAIE taille du "header"
 #include "./src/header.h"		// Header, contient les definitions des fonctions et structure
-#include "./src/tools.c"
-#include "./src/pixelManip.c"
-#include "./src/bmpManip.c"
-#include "./src/bmpModif.c"
-#include "./src/bmpStats.c"
+#include "./src/tools.c"		// Contient différents outils utiles au code
+#include "./src/pixelManip.c"	// Manipulation des pixels (getpixel, setpixel, rgb2hsl...)
+#include "./src/bmpManip.c"		// Fonctions d'ouverture, copie, sauvegarde d'image
+#include "./src/bmpModif.c"		// Modification des images
+#include "./src/bmpStats.c"		// Satistiques des images: histogrammes, couleurs moyennes...
 
 
 int main()
@@ -44,8 +44,7 @@ int main()
 				"	" CBLU"4."CRESET" Saturation\n"
 				"	" CBLU"5."CRESET" Contours\n"
 				"	" CBLU"6."CRESET" Histogramme\n"
-				"	" CBLU"7."CRESET" Re-Colorisation (eme)\n"
-				"	" CBLU"8."CRESET" Re-Colorisation (rob)\n");
+				"	" CBLU"7."CRESET" Re-Colorisation (eme)\n");
 
 		scanf("%d", &choice);
 		switch(choice){
